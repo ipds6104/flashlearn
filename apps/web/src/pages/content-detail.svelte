@@ -7,6 +7,8 @@
   import QuizRunner from '../components/QuizRunner.svelte';
   import CombinedModule from '../components/CombinedModule.svelte';
   import ContentEditorModal from '../components/ContentEditorModal.svelte';
+  import Icon from '../components/ui/Icon.svelte';
+  import ChipBadge from '../components/ui/ChipBadge.svelte';
 
   interface Props {
     f7route?: any;
@@ -61,27 +63,31 @@
 <Page name="content-detail">
 <div class="content-detail-page" style="min-height: 100vh; padding-bottom: 40px;">
   <!-- Sub-navbar Back Bar -->
-  <div style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 16px;">
+  <div style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 10px 16px;">
     <div style="max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
       <button
         onclick={goBack}
-        style="background: none; border: none; font-size: 0.95rem; font-weight: 700; color: #0f766e; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 0;"
+        style="background: none; border: none; font-size: 0.9rem; font-weight: 700; color: #0f766e; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 4px 0; white-space: nowrap;"
       >
-        ← Kembali ke Workspace
+        <Icon name="arrow-left" size={15} />
+        <span>Kembali ke Workspace</span>
       </button>
 
       {#if content}
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">
-            Tipe: <strong>{content.type.toUpperCase()}</strong>
-          </span>
+        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+          <ChipBadge
+            variant={content.type === 'quiz' ? 'quiz' : content.type === 'materi' ? 'materi' : 'combined'}
+            icon={content.type === 'quiz' ? 'check-circle' : content.type === 'materi' ? 'book-open' : 'layers'}
+            label={content.type.toUpperCase()}
+          />
 
           {#if canEdit}
             <button
               onclick={() => (showEditModal = true)}
-              style="background: #0f766e; color: #ffffff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(15,118,110,0.25);"
+              style="background: #0f766e; color: #ffffff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(15,118,110,0.25); white-space: nowrap;"
             >
-              ✏️ Edit Modul Ini
+              <Icon name="pencil" size={13} />
+              <span>Edit Modul</span>
             </button>
           {/if}
         </div>

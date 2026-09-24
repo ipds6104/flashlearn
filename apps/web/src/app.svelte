@@ -4,6 +4,7 @@
   import { auth } from './stores/auth.svelte';
   import NavbarAuth from './components/NavbarAuth.svelte';
   import ApiKeyModal from './components/ApiKeyModal.svelte';
+  import Icon from './components/ui/Icon.svelte';
 
   const f7params = {
     name: 'FlashLearn',
@@ -50,12 +51,12 @@
       <a
         href="#/"
         onclick={(e) => navigateTo('/', e)}
-        style="text-decoration: none; display: flex; align-items: center; gap: 8px; flex-shrink: 0;"
+        style="text-decoration: none; display: flex; align-items: center; gap: 9px; flex-shrink: 0;"
       >
         <div
-          style="width: 34px; height: 34px; background: #0f766e; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 1.1rem; font-weight: 800; box-shadow: 0 4px 10px rgba(15, 118, 110, 0.3);"
+          style="width: 32px; height: 32px; background: #0f766e; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 4px 10px rgba(15, 118, 110, 0.25);"
         >
-          ⚡
+          <Icon name="bolt" size={17} strokeWidth={2.2} />
         </div>
         <div>
           <span style="font-size: 1.25rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
@@ -88,9 +89,10 @@
           <a
             href="#/admin"
             onclick={(e) => navigateTo('/admin', e)}
-            style="color: #b91c1c; text-decoration: none; font-weight: 700; font-size: 0.9rem;"
+            style="color: #b91c1c; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;"
           >
-            🛡️ Superadmin
+            <Icon name="shield-check" size={15} />
+            <span>Superadmin</span>
           </a>
         {/if}
 
@@ -98,9 +100,10 @@
           href="/docs"
           target="_blank"
           rel="noreferrer"
-          style="color: #64748b; text-decoration: none; font-weight: 600; font-size: 0.85rem;"
+          style="color: #64748b; text-decoration: none; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;"
         >
-          OpenAPI Docs ↗
+          <span>OpenAPI Docs</span>
+          <span style="font-size: 0.75rem;">↗</span>
         </a>
       </nav>
 
@@ -113,9 +116,9 @@
           class="mobile-hamburger-btn"
           onclick={toggleMobileMenu}
           aria-label="Menu navigasi"
-          style="width: 36px; height: 36px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; font-size: 1.15rem; cursor: pointer; display: none; align-items: center; justify-content: center; padding: 0;"
+          style="width: 36px; height: 36px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; cursor: pointer; display: none; align-items: center; justify-content: center; padding: 0;"
         >
-          {mobileMenuOpen ? '✕' : '☰'}
+          <Icon name={mobileMenuOpen ? 'xmark' : 'bars-3'} size={18} />
         </button>
       </div>
     </div>
@@ -158,9 +161,10 @@
           <!-- Highlight Mobile API Key Button -->
           <button
             onclick={() => { closeMobileMenu(); auth.openApiKeyModal(); }}
-            style="background: linear-gradient(135deg, #0f766e, #0d9488); color: #ffffff; border: none; padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);"
+            style="background: #0f766e; color: #ffffff; border: none; padding: 12px 16px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);"
           >
-            🔑 Manajemen API Key (Coding Agent)
+            <Icon name="key" size={16} />
+            <span>Manajemen API Key (Coding Agent)</span>
           </button>
         {/if}
 
@@ -171,7 +175,8 @@
             onclick={(e) => navigateTo('/', e)}
             style="padding: 10px 14px; border-radius: 10px; text-decoration: none; color: #1e293b; font-weight: 600; font-size: 0.95rem; background: #f8fafc; display: flex; align-items: center; gap: 10px;"
           >
-            <span>🧭</span> Eksplorasi Materi & Kuis
+            <Icon name="book-open" size={17} style="color: #64748b;" />
+            <span>Eksplorasi Modul & Kuis</span>
           </a>
 
           {#if auth.isCreator}
@@ -180,7 +185,8 @@
               onclick={(e) => navigateTo('/creator', e)}
               style="padding: 10px 14px; border-radius: 10px; text-decoration: none; color: #0f766e; font-weight: 700; font-size: 0.95rem; background: #f0fdfa; border: 1px solid #ccfbf1; display: flex; align-items: center; gap: 10px;"
             >
-              <span>🛠️</span> Studio Kreator
+              <Icon name="pencil" size={17} style="color: #0f766e;" />
+              <span>Studio Kreator</span>
             </a>
           {/if}
 
@@ -190,7 +196,8 @@
               onclick={(e) => navigateTo('/admin', e)}
               style="padding: 10px 14px; border-radius: 10px; text-decoration: none; color: #b91c1c; font-weight: 700; font-size: 0.95rem; background: #fef2f2; border: 1px solid #fecaca; display: flex; align-items: center; gap: 10px;"
             >
-              <span>🛡️</span> Superadmin Control Panel
+              <Icon name="shield-check" size={17} style="color: #b91c1c;" />
+              <span>Superadmin Control Panel</span>
             </a>
           {/if}
 
@@ -202,7 +209,8 @@
             style="padding: 10px 14px; border-radius: 10px; text-decoration: none; color: #475569; font-weight: 600; font-size: 0.9rem; background: #f8fafc; display: flex; align-items: center; justify-content: space-between;"
           >
             <span style="display: flex; align-items: center; gap: 10px;">
-              <span>📄</span> OpenAPI Docs
+              <Icon name="link" size={16} style="color: #64748b;" />
+              <span>OpenAPI Scalar Docs</span>
             </span>
             <span style="color: #94a3b8; font-size: 0.8rem;">↗</span>
           </a>
@@ -214,7 +222,8 @@
               onclick={() => { closeMobileMenu(); auth.logout(); }}
               style="width: 100%; background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"
             >
-              🚪 Keluar ({auth.user?.name.split(' ')[0]})
+              <Icon name="xmark" size={16} />
+              <span>Keluar ({auth.user?.name.split(' ')[0]})</span>
             </button>
           </div>
         {/if}

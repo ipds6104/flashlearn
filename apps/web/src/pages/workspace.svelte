@@ -5,6 +5,8 @@
   import type { Workspace, Content } from '@flashlearn/shared';
   import ContentEditorModal from '../components/ContentEditorModal.svelte';
   import ConfirmDeleteModal from '../components/ConfirmDeleteModal.svelte';
+  import Icon from '../components/ui/Icon.svelte';
+  import ChipBadge from '../components/ui/ChipBadge.svelte';
 
   interface Props {
     f7route?: any;
@@ -38,7 +40,7 @@
   let isLoadingSubmissions = $state(false);
   let isExporting = $state(false);
 
-  // Toast / Feedback state
+  // Feedback state
   let copiedLinkId = $state<string | null>(null);
 
   $effect(() => {
@@ -75,7 +77,7 @@
   );
 
   function navigateToContent(c: Content) {
-    if (c.deletedAt) return; // Cannot view soft-deleted content directly
+    if (c.deletedAt) return;
     if (f7router) {
       f7router.navigate(`/content/${c.id}`);
     } else {
@@ -175,7 +177,7 @@
     }
     try {
       await api.contents.rollback(c.id);
-      alert('✓ Konten berhasil di-rollback ke versi sebelumnya!');
+      alert('Konten berhasil di-rollback ke versi sebelumnya.');
       await loadWorkspaceData();
     } catch (err: any) {
       alert(`Gagal rollback: ${err.message}`);
@@ -186,23 +188,27 @@
 <Page name="workspace">
 <div class="workspace-page" style="max-width: 900px; margin: 0 auto; padding: 20px 16px;">
   {#if isLoading}
-    <div style="text-align: center; padding: 48px; color: #94a3b8;">
+    <div style="text-align: center; padding: 48px; color: #94a3b8; font-weight: 500;">
       Memuat detail workspace...
     </div>
   {:else if workspace}
     <!-- Workspace Header -->
     <div
-      style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 28px 24px; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.03);"
+      style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 18px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.02);"
     >
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; flex-wrap: wrap;">
-        <div style="display: flex; align-items: center; gap: 14px;">
-          <div style="font-size: 2.8rem; line-height: 1;">{workspace.icon || '📚'}</div>
-          <div>
-            <h1 style="margin: 0 0 4px 0; font-size: 1.7rem; color: #0f172a; font-weight: 800;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 14px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
+          <div
+            style="width: 52px; height: 52px; border-radius: 14px; background: #f0fdfa; border: 1px solid #ccfbf1; display: flex; align-items: center; justify-content: center; font-size: 2rem; flex-shrink: 0;"
+          >
+            {workspace.icon || '📚'}
+          </div>
+          <div style="min-width: 0; flex: 1;">
+            <h1 style="margin: 0 0 4px 0; font-size: 1.55rem; color: #0f172a; font-weight: 800; overflow-wrap: break-word; word-break: break-word; line-height: 1.25;">
               {workspace.name}
             </h1>
-            <div style="font-size: 0.85rem; color: #64748b;">
-              Dikelola oleh <strong>{workspace.creatorName || 'Creator'}</strong>
+            <div style="font-size: 0.825rem; color: #64748b;">
+              Dikelola oleh <strong style="color: #334155;">{workspace.creatorName || 'Creator'}</strong>
             </div>
           </div>
         </div>
@@ -210,64 +216,79 @@
         {#if isOwner}
           <button
             onclick={openCreateModal}
-            style="background: #0f766e; color: #ffffff; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);"
+            style="background: #0f766e; color: #ffffff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25); white-space: nowrap; flex-shrink: 0;"
           >
-            <span>+</span> Buat Modul / Kuis
+            <Icon name="plus" size={15} />
+            <span>Buat Modul</span>
           </button>
         {/if}
       </div>
 
       {#if workspace.description}
-        <p style="margin: 0; font-size: 0.975rem; line-height: 1.6; color: #475569;">
+        <p style="margin: 0; font-size: 0.925rem; line-height: 1.6; color: #475569; overflow-wrap: break-word;">
           {workspace.description}
         </p>
       {/if}
     </div>
 
-    <!-- Filters Bar -->
-    <div style="display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; align-items: center;">
+    <!-- Filters Bar (Horizontal Scrollable with Zero-Wrap Pills) -->
+    <div
+      style="display: flex; gap: 6px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; align-items: center; -webkit-overflow-scrolling: touch;"
+    >
       <button
         onclick={() => (activeFilter = 'all')}
-        style="padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; background: {activeFilter === 'all' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'all' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+        style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'all' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'all' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
-        Semua Modul ({activeContents.length})
+        <span>Semua</span>
+        <span style="font-size: 0.75rem; opacity: 0.85;">({activeContents.length})</span>
       </button>
+
       <button
         onclick={() => (activeFilter = 'materi')}
-        style="padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; background: {activeFilter === 'materi' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'materi' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+        style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'materi' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'materi' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
-        📖 Materi Saja ({activeContents.filter(c => c.type === 'materi').length})
+        <Icon name="book-open" size={13} />
+        <span>Materi</span>
+        <span style="font-size: 0.75rem; opacity: 0.85;">({activeContents.filter(c => c.type === 'materi').length})</span>
       </button>
+
       <button
         onclick={() => (activeFilter = 'quiz')}
-        style="padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; background: {activeFilter === 'quiz' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'quiz' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+        style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'quiz' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'quiz' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
-        📝 Quiz Saja ({activeContents.filter(c => c.type === 'quiz').length})
+        <Icon name="check-circle" size={13} />
+        <span>Kuis</span>
+        <span style="font-size: 0.75rem; opacity: 0.85;">({activeContents.filter(c => c.type === 'quiz').length})</span>
       </button>
+
       <button
         onclick={() => (activeFilter = 'combined')}
-        style="padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; background: {activeFilter === 'combined' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'combined' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+        style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'combined' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'combined' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
-        📚⚡ Materi & Quiz ({activeContents.filter(c => c.type === 'combined').length})
+        <Icon name="layers" size={13} />
+        <span>Gabungan</span>
+        <span style="font-size: 0.75rem; opacity: 0.85;">({activeContents.filter(c => c.type === 'combined').length})</span>
       </button>
 
       {#if isOwner && deletedContents.length > 0}
         <button
           onclick={() => (activeFilter = 'trash')}
-          style="padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; background: {activeFilter === 'trash' ? '#e11d48' : '#fef2f2'}; color: {activeFilter === 'trash' ? '#ffffff' : '#be123c'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-left: auto;"
+          style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'trash' ? '#e11d48' : '#fef2f2'}; color: {activeFilter === 'trash' ? '#ffffff' : '#be123c'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-left: auto;"
         >
-          🗑️ Arsip / Terhapus ({deletedContents.length})
+          <Icon name="trash" size={13} />
+          <span>Arsip</span>
+          <span style="font-size: 0.75rem; opacity: 0.85;">({deletedContents.length})</span>
         </button>
       {/if}
     </div>
 
     <!-- Contents List -->
     {#if filteredContents.length === 0}
-      <div style="background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 48px 24px; text-align: center;">
-        <div style="font-size: 2.2rem; margin-bottom: 8px;">
-          {activeFilter === 'trash' ? '✨' : '📝'}
+      <div style="background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 48px 20px; text-align: center;">
+        <div style="color: #94a3b8; margin-bottom: 8px;">
+          <Icon name={activeFilter === 'trash' ? 'trash' : 'book-open'} size={32} />
         </div>
-        <p style="color: #64748b; margin: 0 0 12px 0; font-weight: 600;">
+        <p style="color: #64748b; margin: 0 0 14px 0; font-weight: 600; font-size: 0.95rem;">
           {activeFilter === 'trash'
             ? 'Tidak ada modul di arsip terhapus.'
             : 'Belum ada konten pada kategori ini.'}
@@ -275,34 +296,33 @@
         {#if isOwner && activeFilter !== 'trash'}
           <button
             onclick={openCreateModal}
-            style="background: #0f766e; color: #ffffff; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer;"
+            style="background: #0f766e; color: #ffffff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"
           >
-            Buat Modul Sekarang
+            <Icon name="plus" size={14} />
+            <span>Buat Modul Sekarang</span>
           </button>
         {/if}
       </div>
     {:else}
-      <div style="display: flex; flex-direction: column; gap: 14px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
         {#each filteredContents as c}
           {#if activeFilter === 'trash'}
             <!-- Soft Deleted Item Card in Trash Tab -->
             <div
-              style="background: #fff7ed; border: 1.5px dashed #fdba74; border-radius: 16px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;"
+              style="background: #fff7ed; border: 1.5px dashed #fdba74; border-radius: 14px; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;"
             >
-              <div style="flex: 1; min-width: 240px;">
+              <div style="flex: 1; min-width: 220px;">
                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                  <span style="background: #fed7aa; color: #9a3412; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">
-                    🗑️ Terhapus (Arsip)
-                  </span>
-                  <span style="font-size: 0.75rem; color: #9a3412;">
-                    Tipe: {c.type.toUpperCase()}
+                  <ChipBadge variant="danger" icon="trash" label="Arsip Terhapus" />
+                  <span style="font-size: 0.75rem; color: #9a3412; font-weight: 600; text-transform: uppercase;">
+                    {c.type}
                   </span>
                 </div>
-                <h3 style="margin: 0 0 4px 0; font-size: 1.1rem; color: #7c2d12; font-weight: 700;">
+                <h3 style="margin: 0 0 4px 0; font-size: 1.05rem; color: #7c2d12; font-weight: 700; overflow-wrap: break-word;">
                   {c.title}
                 </h3>
-                <div style="font-size: 0.8rem; color: #9a3412;">
-                  Dihapus pada: {c.deletedAt ? new Date(c.deletedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '-'}
+                <div style="font-size: 0.775rem; color: #9a3412;">
+                  Dihapus: {c.deletedAt ? new Date(c.deletedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '-'}
                 </div>
               </div>
 
@@ -310,9 +330,10 @@
                 <button
                   onclick={(e) => handleRestoreContent(c, e)}
                   disabled={isRestoring}
-                  style="background: #0f766e; color: #ffffff; border: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(15,118,110,0.25);"
+                  style="background: #0f766e; color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.825rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(15,118,110,0.2); white-space: nowrap;"
                 >
-                  ♻️ {isRestoring ? 'Memulihkan...' : 'Pulihkan Modul'}
+                  <Icon name="arrow-path" size={13} />
+                  <span>{isRestoring ? 'Memulihkan...' : 'Pulihkan Modul'}</span>
                 </button>
               </div>
             </div>
@@ -324,103 +345,109 @@
               role="button"
               tabindex="0"
               onkeydown={(e) => e.key === 'Enter' && navigateToContent(c)}
-              style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);"
+              style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);"
             >
-              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div style="flex: 1; padding-right: 16px;">
-                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
-                    {#if c.type === 'materi'}
-                      <span class="badge-materi">📖 Materi Saja</span>
-                    {:else if c.type === 'quiz'}
-                      <span class="badge-quiz">📝 Quiz Saja</span>
-                    {:else}
-                      <span class="badge-combined">📚⚡ Materi + Quiz</span>
-                    {/if}
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+                <div style="flex: 1; min-width: 0;">
+                  <!-- Micro Metadata Chips -->
+                  <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+                    <ChipBadge
+                      variant={c.type === 'quiz' ? 'quiz' : c.type === 'materi' ? 'materi' : 'combined'}
+                      icon={c.type === 'quiz' ? 'check-circle' : c.type === 'materi' ? 'book-open' : 'layers'}
+                      label={c.type === 'quiz' ? 'Kuis' : c.type === 'materi' ? 'Materi' : 'Materi + Kuis'}
+                    />
 
                     {#if c.questions && c.questions.length > 0}
-                      <span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 6px; font-weight: 700;">
-                        {c.questions.length} Butir Soal
-                      </span>
+                      <ChipBadge variant="neutral" icon="check-circle" label="{c.questions.length} Soal" />
                     {/if}
 
                     {#if c.readingTimeMinutes}
-                      <span style="font-size: 0.75rem; color: #94a3b8;">
-                        ⏱️ ~{c.readingTimeMinutes} Menit
-                      </span>
+                      <ChipBadge variant="neutral" icon="clock" label="~{c.readingTimeMinutes} mnt" />
                     {/if}
                   </div>
 
-                  <h3 style="margin: 0 0 6px 0; font-size: 1.15rem; color: #0f172a; font-weight: 700;">
+                  <h3 style="margin: 0 0 6px 0; font-size: 1.1rem; color: #0f172a; font-weight: 700; line-height: 1.35; overflow-wrap: break-word; word-break: break-word;">
                     {c.title}
                   </h3>
 
                   {#if c.summary}
-                    <p style="margin: 0; font-size: 0.875rem; color: #64748b; line-height: 1.4;">
+                    <p style="margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.45; overflow-wrap: break-word;">
                       {c.summary}
                     </p>
                   {/if}
                 </div>
 
-                <div>
-                  <span style="color: #0f766e; font-weight: 700; font-size: 0.9rem; white-space: nowrap;">
-                    Buka Modul →
+                <div style="flex-shrink: 0;">
+                  <span style="color: #0f766e; font-weight: 700; font-size: 0.85rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;">
+                    <span>Buka</span>
+                    <Icon name="chevron-right" size={13} />
                   </span>
                 </div>
               </div>
 
-              <!-- Creator Action Bar -->
+              <!-- Creator Action Toolbar -->
               {#if isOwner}
                 <div
-                  style="display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid #f1f5f9; gap: 8px; flex-wrap: wrap;"
+                  style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid #f1f5f9; gap: 8px; flex-wrap: wrap;"
                   onclick={(e) => e.stopPropagation()}
                   role="toolbar"
                 >
-                  <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                    <!-- Share link -->
+                  <!-- Group 1: Sharing & Analytics -->
+                  <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                     <button
+                      type="button"
                       onclick={(e) => copyShareLink(c, e)}
-                      style="background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;"
+                      style="background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; padding: 5px 10px; border-radius: 6px; font-size: 0.775rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;"
                     >
-                      🔗 {copiedLinkId === c.id ? 'Link Tersalin! ✓' : 'Salin Link'}
+                      <Icon name={copiedLinkId === c.id ? 'check' : 'link'} size={13} />
+                      <span>{copiedLinkId === c.id ? 'Tersalin' : 'Salin Link'}</span>
                     </button>
 
-                    <!-- View Submissions & Analytics (Quiz / Combined) -->
                     {#if c.type !== 'materi'}
                       <button
+                        type="button"
                         onclick={(e) => openSubmissions(c, e)}
-                        style="background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;"
+                        style="background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 5px 10px; border-radius: 6px; font-size: 0.775rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;"
                       >
-                        📊 Hasil & Export Excel
+                        <Icon name="chart-bar" size={13} />
+                        <span>Hasil & Ekspor</span>
                       </button>
                     {/if}
                   </div>
 
-                  <div style="display: flex; gap: 8px; align-items: center;">
+                  <!-- Group 2: Mutation & Governance -->
+                  <div style="display: flex; gap: 6px; align-items: center;">
                     <!-- Edit Module Button -->
                     <button
+                      type="button"
                       onclick={(e) => openEditModal(c, e)}
-                      title="Edit judul, materi, atau butir kuis"
-                      style="background: #0f766e; border: none; color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(15, 118, 110, 0.2);"
+                      title="Edit modul pembelajaran"
+                      style="background: #0f766e; border: none; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 0.775rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 1px 4px rgba(15,118,110,0.2); white-space: nowrap;"
                     >
-                      ✏️ Edit Modul
+                      <Icon name="pencil" size={12} />
+                      <span>Edit</span>
                     </button>
 
                     <!-- Rollback to previous version -->
                     <button
+                      type="button"
                       onclick={(e) => handleRollback(c, e)}
                       title="Kembalikan ke snapshot versi sebelumnya"
-                      style="background: #fefce8; border: 1px solid #fef08a; color: #854d0e; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;"
+                      style="background: #fefce8; border: 1px solid #fef08a; color: #854d0e; padding: 5px 9px; border-radius: 6px; font-size: 0.775rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;"
                     >
-                      ↩️ Rollback
+                      <Icon name="arrow-path" size={12} />
+                      <span>Rollback</span>
                     </button>
 
                     <!-- Delete (Soft Delete) -->
                     <button
+                      type="button"
                       onclick={(e) => openDeleteModal(c, e)}
-                      title="Hapus modul ini (dapat dipulihkan kapan saja)"
-                      style="background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48; padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;"
+                      title="Hapus modul ini"
+                      aria-label="Hapus modul"
+                      style="background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48; padding: 5px 8px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"
                     >
-                      🗑️
+                      <Icon name="trash" size={13} />
                     </button>
                   </div>
                 </div>
@@ -436,63 +463,66 @@
 <!-- Modal Submissions & Excel Export -->
 {#if showSubmissionsModal && selectedContentForSubmissions}
   <div
-    style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 1100; display: flex; align-items: center; justify-content: center; padding: 16px;"
+    style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 12px;"
     onclick={() => (showSubmissionsModal = false)}
     role="button"
     tabindex="0"
     onkeydown={(e) => e.key === 'Escape' && (showSubmissionsModal = false)}
   >
     <div
-      style="background: #ffffff; width: 100%; max-width: 780px; border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; display: flex; flex-direction: column;"
+      style="background: #ffffff; width: 100%; max-width: 780px; border-radius: 18px; padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; display: flex; flex-direction: column;"
       onclick={(e) => e.stopPropagation()}
       role="document"
     >
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-        <div>
-          <h2 style="margin: 0 0 4px 0; font-size: 1.35rem; font-weight: 800; color: #0f172a;">
-            📊 Rekap Hasil Peserta
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; gap: 12px;">
+        <div style="min-width: 0; flex: 1;">
+          <h2 style="margin: 0 0 4px 0; font-size: 1.25rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+            <Icon name="chart-bar" size={18} style="color: #0f766e;" />
+            <span>Rekap Hasil Peserta</span>
           </h2>
-          <div style="font-size: 0.9rem; color: #64748b;">
+          <div style="font-size: 0.85rem; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
             Modul: <strong>{selectedContentForSubmissions.title}</strong> • Total Percobaan: {activeSubmissions.length}
           </div>
         </div>
         <button
           onclick={() => (showSubmissionsModal = false)}
-          style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"
+          aria-label="Tutup dialog"
+          style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b;"
         >
-          ✕
+          <Icon name="xmark" size={16} />
         </button>
       </div>
 
       <!-- Export Actions Banner -->
       <div
-        style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap;"
+        style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;"
       >
-        <span style="font-size: 0.85rem; color: #475569; font-weight: 600;">
-          Unduh rekapan tabel (1 baris per peserta/percobaan lengkap dengan timestamp):
+        <span style="font-size: 0.825rem; color: #475569; font-weight: 600;">
+          Unduh rekapan tabel lengkap timestamp:
         </span>
         <div style="display: flex; gap: 8px;">
           <button
             onclick={() => handleExport('xlsx')}
             disabled={isExporting}
-            style="background: #16a34a; color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px;"
+            style="background: #16a34a; color: #ffffff; border: none; padding: 7px 14px; border-radius: 7px; font-weight: 700; font-size: 0.825rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;"
           >
-            📥 {isExporting ? 'Mengekspor...' : 'Export Excel (.xlsx)'}
+            <Icon name="arrow-down-tray" size={14} />
+            <span>{isExporting ? 'Mengekspor...' : 'Ekspor Excel (.xlsx)'}</span>
           </button>
           <button
             onclick={() => handleExport('csv')}
             disabled={isExporting}
-            style="background: #334155; color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;"
+            style="background: #334155; color: #ffffff; border: none; padding: 7px 12px; border-radius: 7px; font-weight: 700; font-size: 0.825rem; cursor: pointer; white-space: nowrap;"
           >
-            Export CSV
+            CSV
           </button>
         </div>
       </div>
 
       <!-- Submissions Table -->
-      <div style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+      <div style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 10px; -webkit-overflow-scrolling: touch;">
         {#if isLoadingSubmissions}
-          <div style="text-align: center; padding: 48px; color: #94a3b8;">
+          <div style="text-align: center; padding: 48px; color: #94a3b8; font-weight: 500;">
             Memuat data peserta...
           </div>
         {:else if activeSubmissions.length === 0}
@@ -500,40 +530,39 @@
             Belum ada peserta yang mengerjakan kuis ini.
           </div>
         {:else}
-          <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.825rem; text-align: left;">
             <thead>
               <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569;">
-                <th style="padding: 12px 14px;">No</th>
-                <th style="padding: 12px 14px;">Nama Peserta</th>
-                <th style="padding: 12px 14px;">Nilai (%)</th>
-                <th style="padding: 12px 14px;">Skor Benar</th>
-                <th style="padding: 12px 14px;">Status</th>
-                <th style="padding: 12px 14px;">Waktu Pengerjaan</th>
+                <th style="padding: 10px 12px; white-space: nowrap;">No</th>
+                <th style="padding: 10px 12px; white-space: nowrap;">Nama Peserta</th>
+                <th style="padding: 10px 12px; white-space: nowrap;">Nilai (%)</th>
+                <th style="padding: 10px 12px; white-space: nowrap;">Skor</th>
+                <th style="padding: 10px 12px; white-space: nowrap;">Status</th>
+                <th style="padding: 10px 12px; white-space: nowrap;">Waktu</th>
               </tr>
             </thead>
             <tbody>
               {#each activeSubmissions as sub, idx}
                 <tr style="border-bottom: 1px solid #f1f5f9;">
-                  <td style="padding: 12px 14px; color: #94a3b8;">{idx + 1}</td>
-                  <td style="padding: 12px 14px; font-weight: 700; color: #0f172a;">
+                  <td style="padding: 10px 12px; color: #94a3b8;">{idx + 1}</td>
+                  <td style="padding: 10px 12px; font-weight: 700; color: #0f172a;">
                     {sub.guestName || sub.userName || 'Anonim'}
                   </td>
-                  <td style="padding: 12px 14px; font-weight: 800; color: {sub.percentage >= 70 ? '#16a34a' : '#dc2626'};">
+                  <td style="padding: 10px 12px; font-weight: 800; color: {sub.percentage >= 70 ? '#16a34a' : '#dc2626'};">
                     {sub.percentage}%
                   </td>
-                  <td style="padding: 12px 14px; color: #475569;">
-                    {sub.score} / {sub.totalQuestions}
+                  <td style="padding: 10px 12px; color: #475569;">
+                    {sub.score}/{sub.totalQuestions}
                   </td>
-                  <td style="padding: 12px 14px;">
-                    <span
-                      style="padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: {sub.percentage >= 70 ? '#dcfce7' : '#fee2e2'}; color: {sub.percentage >= 70 ? '#15803d' : '#b91c1c'};"
-                    >
-                      {sub.percentage >= 70 ? 'Lulus' : 'Belum Lulus'}
-                    </span>
+                  <td style="padding: 10px 12px;">
+                    <ChipBadge
+                      variant={sub.percentage >= 70 ? 'success' : 'danger'}
+                      label={sub.percentage >= 70 ? 'Lulus' : 'Belum Lulus'}
+                    />
                   </td>
-                  <td style="padding: 12px 14px; color: #64748b; font-size: 0.8rem;">
+                  <td style="padding: 10px 12px; color: #64748b; font-size: 0.775rem; white-space: nowrap;">
                     {new Date(sub.createdAt).toLocaleString('id-ID', {
-                      dateStyle: 'medium',
+                      dateStyle: 'short',
                       timeStyle: 'short',
                     })}
                   </td>

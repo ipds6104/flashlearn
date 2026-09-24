@@ -1,5 +1,6 @@
 <script lang="ts">
   import { auth } from '../stores/auth.svelte';
+  import Icon from './ui/Icon.svelte';
 
   let googleButtonContainer: HTMLDivElement | undefined = $state();
 
@@ -55,10 +56,10 @@
 
 <div class="navbar-auth" style="display: flex; align-items: center; gap: 8px;">
   {#if auth.isLoading}
-    <div style="font-size: 0.85rem; color: #94a3b8;">Memeriksa akun...</div>
+    <div style="font-size: 0.85rem; color: #94a3b8; white-space: nowrap;">Memeriksa akun...</div>
   {:else if auth.isLoggedIn && auth.user}
     <!-- User Profile & Badges -->
-    <div style="display: flex; align-items: center; gap: 8px;">
+    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
       {#if auth.user.avatar}
         <img
           src={auth.user.avatar}
@@ -66,12 +67,12 @@
           style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #0f766e; flex-shrink: 0;"
         />
       {/if}
-      <div class="desktop-user-info" style="display: flex; flex-direction: column; text-align: right;">
-        <span style="font-weight: 700; font-size: 0.85rem; color: #0f172a; line-height: 1.2;">
+      <div class="desktop-user-info" style="display: flex; flex-direction: column; text-align: right; min-width: 0;">
+        <span style="font-weight: 700; font-size: 0.85rem; color: #0f172a; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
           {auth.user.name.split(' ')[0]}
         </span>
         <span
-          style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: {auth.isSuperadmin ? '#b91c1c' : '#0f766e'};"
+          style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: {auth.isSuperadmin ? '#b91c1c' : '#0f766e'}; line-height: 1;"
         >
           {auth.user.role}
         </span>
@@ -82,9 +83,9 @@
     <button
       onclick={() => auth.openApiKeyModal()}
       title="Manajemen API Key"
-      style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: #0f766e; display: flex; align-items: center; gap: 4px; white-space: nowrap;"
+      style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: #0f766e; display: flex; align-items: center; gap: 6px; white-space: nowrap; flex-shrink: 0;"
     >
-      <span>🔑</span>
+      <Icon name="key" size={14} />
       <span class="desktop-apikey-label">API Key</span>
     </button>
 
@@ -92,13 +93,13 @@
     <button
       class="desktop-logout-button"
       onclick={() => auth.logout()}
-      style="background: none; border: none; color: #ef4444; font-size: 0.85rem; font-weight: 600; cursor: pointer; padding: 4px; white-space: nowrap;"
+      style="background: none; border: none; color: #ef4444; font-size: 0.85rem; font-weight: 600; cursor: pointer; padding: 4px; white-space: nowrap; flex-shrink: 0;"
     >
       Keluar
     </button>
   {:else}
     <!-- Guest Google Login Button -->
-    <div bind:this={googleButtonContainer} style="display: flex; align-items: center;"></div>
+    <div bind:this={googleButtonContainer} style="display: flex; align-items: center; flex-shrink: 0;"></div>
   {/if}
 </div>
 
