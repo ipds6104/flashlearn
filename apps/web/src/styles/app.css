@@ -137,3 +137,33 @@ h1, h2, h3, .brand-font {
   background: #fee2e2 !important;
   color: #7f1d1d;
 }
+
+/* Zero-wrap & Framework7 button width overrides */
+button.fl-pill-btn,
+.fl-pill-btn {
+  width: auto !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+  min-width: fit-content;
+}
+
+.fl-chip-badge {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.fl-no-wrap {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.fl-truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.fl-break-word {
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+}

@@ -233,11 +233,12 @@
 
     <!-- Filters Bar (Horizontal Scrollable with Zero-Wrap Pills) -->
     <div
-      style="display: flex; gap: 6px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; align-items: center; -webkit-overflow-scrolling: touch;"
+      style="display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; align-items: center; -webkit-overflow-scrolling: touch;"
     >
       <button
         onclick={() => (activeFilter = 'all')}
-        style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'all' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'all' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+        class="fl-pill-btn"
+        style="width: auto !important; padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'all' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'all' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
         <span>Semua</span>
         <span style="font-size: 0.75rem; opacity: 0.85;">({activeContents.length})</span>
@@ -245,7 +246,8 @@
 
       <button
         onclick={() => (activeFilter = 'materi')}
-        style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'materi' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'materi' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+        class="fl-pill-btn"
+        style="width: auto !important; padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'materi' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'materi' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
         <Icon name="book-open" size={13} />
         <span>Materi</span>
@@ -254,7 +256,8 @@
 
       <button
         onclick={() => (activeFilter = 'quiz')}
-        style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'quiz' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'quiz' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+        class="fl-pill-btn"
+        style="width: auto !important; padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'quiz' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'quiz' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
         <Icon name="check-circle" size={13} />
         <span>Kuis</span>
@@ -263,7 +266,8 @@
 
       <button
         onclick={() => (activeFilter = 'combined')}
-        style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'combined' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'combined' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+        class="fl-pill-btn"
+        style="width: auto !important; padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'combined' ? '#0f766e' : '#ffffff'}; color: {activeFilter === 'combined' ? '#ffffff' : '#64748b'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
         <Icon name="layers" size={13} />
         <span>Gabungan</span>
@@ -273,7 +277,8 @@
       {#if isOwner && deletedContents.length > 0}
         <button
           onclick={() => (activeFilter = 'trash')}
-          style="padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'trash' ? '#e11d48' : '#fef2f2'}; color: {activeFilter === 'trash' ? '#ffffff' : '#be123c'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-left: auto;"
+          class="fl-pill-btn"
+          style="width: auto !important; padding: 7px 14px; border-radius: 8px; font-size: 0.825rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: {activeFilter === 'trash' ? '#e11d48' : '#fef2f2'}; color: {activeFilter === 'trash' ? '#ffffff' : '#be123c'}; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-left: auto;"
         >
           <Icon name="trash" size={13} />
           <span>Arsip</span>
