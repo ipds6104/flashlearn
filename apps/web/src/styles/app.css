@@ -167,3 +167,117 @@ button.fl-pill-btn,
   overflow-wrap: break-word !important;
   word-break: break-word !important;
 }
+
+/* Modern Micro-animations & Impeccable Design Tokens */
+@keyframes fl-pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(45, 212, 191, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0);
+  }
+}
+
+@keyframes fl-float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(0.5deg);
+  }
+}
+
+.fl-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #2dd4bf;
+  display: inline-block;
+  animation: fl-pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  flex-shrink: 0;
+}
+
+.fl-hero-float {
+  animation: fl-float-slow 5s ease-in-out infinite;
+}
+
+.fl-card-hover {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.fl-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1 !important;
+}
+
+.fl-interactive-press {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.fl-interactive-press:active {
+  transform: scale(0.97);
+}
+
+.fl-card-hover:hover .fl-hover-arrow {
+  transform: translateX(4px);
+}
+
+.fl-hover-arrow {
+  transition: transform 0.2s ease;
+}
+
+.fl-kbd-badge {
+  background: rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.725rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.fl-search-container {
+  position: relative;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.fl-search-container:focus-within {
+  transform: translateY(-1px);
+}
+
+.fl-search-input {
+  width: 100%;
+  padding: 14px 44px 14px 44px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.96);
+  font-size: 0.95rem;
+  color: #0f172a;
+  box-sizing: border-box;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.12);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.fl-search-input:focus {
+  background: #ffffff;
+  border-color: #2dd4bf;
+  box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.35), 0 12px 28px -4px rgba(0, 0, 0, 0.15);
+}
+
+.fl-feature-card {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.fl-feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 118, 110, 0.2) !important;
+}
+
