@@ -1,0 +1,29 @@
+# Node & Bun
+node_modules
+.bun
+*.log
+dist
+build
+.svelte-kit
+.output
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# DB
+*.sqlite
+*.sqlite-journal
+
+# Impeccable binaries
+**/scripts/bin/
+

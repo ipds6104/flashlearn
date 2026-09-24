@@ -1,0 +1,19 @@
+{
+  "name": "flashlearn-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun --filter ./apps/api dev & bun --filter ./apps/web dev",
+    "dev:api": "bun --filter ./apps/api dev",
+    "dev:web": "bun --filter ./apps/web dev",
+    "build": "bun --filter \"*\" build",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}
