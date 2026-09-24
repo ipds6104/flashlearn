@@ -26,6 +26,3 @@ build
 # Impeccable binaries
 **/scripts/bin/
 
-# Screenshots
-screenshot*.png
-
