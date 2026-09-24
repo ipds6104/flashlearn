@@ -11,20 +11,26 @@ export class LoginWithGoogleUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly googleVerifier: IGoogleVerifier,
-    private readonly tokenService: ITokenService,
-    private readonly superadminEmails: string[] = (
-      process.env.SUPERADMIN_EMAILS || 'ihza2karunia@gmail.com,admin@dvlpid.my.id'
-    )
+    private readonly tokenService: ITokenService
+  ) {}
+
+  private getSuperadminEmails(): string[] {
+    const raw =
+      process.env.SUPERADMIN_EMAILS ||
+      'ipds6104@gmail.com,ihza2karunia@gmail.com,admin@dvlpid.my.id';
+    return raw
       .split(',')
       .map((e) => e.trim().toLowerCase())
-  ) {}
+      .filter(Boolean);
+  }
 
   async execute(input: LoginWithGoogleInput): Promise<AuthSessionResponse> {
     const profile = await this.googleVerifier.verifyIdToken(input.credential);
 
     let user = await this.userRepository.findByEmail(profile.email);
 
-    const isSuper = this.superadminEmails.includes(profile.email.toLowerCase());
+    const superadminEmails = this.getSuperadminEmails();
+    const isSuper = superadminEmails.includes(profile.email.toLowerCase().trim());
     const role: UserRole = isSuper ? 'superadmin' : 'creator';
 
     if (!user) {
