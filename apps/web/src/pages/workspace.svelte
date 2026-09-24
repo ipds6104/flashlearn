@@ -5,6 +5,7 @@
   import type { Workspace, Content } from '@flashlearn/shared';
   import ContentEditorModal from '../components/ContentEditorModal.svelte';
   import ConfirmDeleteModal from '../components/ConfirmDeleteModal.svelte';
+  import QuizReviewModal from '../components/QuizReviewModal.svelte';
   import Icon from '../components/ui/Icon.svelte';
   import ChipBadge from '../components/ui/ChipBadge.svelte';
 
@@ -33,12 +34,10 @@
   let isDeleting = $state(false);
   let isRestoring = $state(false);
 
-  // Submissions Modal State
-  let showSubmissionsModal = $state(false);
-  let activeSubmissions = $state<any[]>([]);
-  let selectedContentForSubmissions = $state<Content | null>(null);
-  let isLoadingSubmissions = $state(false);
-  let isExporting = $state(false);
+  // Post-Quiz Review & Submissions Modal State
+  let showReviewModal = $state(false);
+  let reviewInitialTab = $state<'analysis' | 'participants'>('analysis');
+  let selectedContentForReview = $state<Content | null>(null);
 
   // Feedback state
   let copiedLinkId = $state<string | null>(null);
@@ -93,30 +92,11 @@
     setTimeout(() => (copiedLinkId = null), 2000);
   }
 
-  async function openSubmissions(c: Content, e: Event) {
+  function openQuizReview(c: Content, e: Event, tab: 'analysis' | 'participants' = 'analysis') {
     e.stopPropagation();
-    selectedContentForSubmissions = c;
-    showSubmissionsModal = true;
-    isLoadingSubmissions = true;
-    try {
-      activeSubmissions = await api.contents.getSubmissions(c.id);
-    } catch (err: any) {
-      alert(`Gagal memuat hasil kuis: ${err.message}`);
-    } finally {
-      isLoadingSubmissions = false;
-    }
-  }
-
-  async function handleExport(format: 'xlsx' | 'csv') {
-    if (!selectedContentForSubmissions) return;
-    isExporting = true;
-    try {
-      await api.contents.downloadExport(selectedContentForSubmissions.id, format);
-    } catch (err: any) {
-      alert(`Gagal mengekspor: ${err.message}`);
-    } finally {
-      isExporting = false;
-    }
+    selectedContentForReview = c;
+    reviewInitialTab = tab;
+    showReviewModal = true;
   }
 
   function openCreateModal() {
@@ -411,11 +391,24 @@
                     {#if c.type !== 'materi'}
                       <button
                         type="button"
-                        onclick={(e) => openSubmissions(c, e)}
+                        class="fl-pill-btn"
+                        onclick={(e) => openQuizReview(c, e, 'analysis')}
+                        title="Bahas butir soal & analisis kesalahan peserta"
+                        style="background: #f0fdfa; border: 1.5px solid #99f6e4; color: #0f766e; padding: 5px 10px; border-radius: 6px; font-size: 0.775rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;"
+                      >
+                        <Icon name="sparkles" size={13} />
+                        <span>Bahas Soal</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="fl-pill-btn"
+                        onclick={(e) => openQuizReview(c, e, 'participants')}
+                        title="Rekap nilai peserta & ekspor Excel"
                         style="background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 5px 10px; border-radius: 6px; font-size: 0.775rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;"
                       >
                         <Icon name="chart-bar" size={13} />
-                        <span>Hasil & Ekspor</span>
+                        <span>Rekap Nilai</span>
                       </button>
                     {/if}
                   </div>
@@ -465,120 +458,14 @@
   {/if}
 </div>
 
-<!-- Modal Submissions & Excel Export -->
-{#if showSubmissionsModal && selectedContentForSubmissions}
-  <div
-    style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 12px;"
-    onclick={() => (showSubmissionsModal = false)}
-    role="button"
-    tabindex="0"
-    onkeydown={(e) => e.key === 'Escape' && (showSubmissionsModal = false)}
-  >
-    <div
-      style="background: #ffffff; width: 100%; max-width: 780px; border-radius: 18px; padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; display: flex; flex-direction: column;"
-      onclick={(e) => e.stopPropagation()}
-      role="document"
-    >
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; gap: 12px;">
-        <div style="min-width: 0; flex: 1;">
-          <h2 style="margin: 0 0 4px 0; font-size: 1.25rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-            <Icon name="chart-bar" size={18} style="color: #0f766e;" />
-            <span>Rekap Hasil Peserta</span>
-          </h2>
-          <div style="font-size: 0.85rem; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            Modul: <strong>{selectedContentForSubmissions.title}</strong> • Total Percobaan: {activeSubmissions.length}
-          </div>
-        </div>
-        <button
-          onclick={() => (showSubmissionsModal = false)}
-          aria-label="Tutup dialog"
-          style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b;"
-        >
-          <Icon name="xmark" size={16} />
-        </button>
-      </div>
-
-      <!-- Export Actions Banner -->
-      <div
-        style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;"
-      >
-        <span style="font-size: 0.825rem; color: #475569; font-weight: 600;">
-          Unduh rekapan tabel lengkap timestamp:
-        </span>
-        <div style="display: flex; gap: 8px;">
-          <button
-            onclick={() => handleExport('xlsx')}
-            disabled={isExporting}
-            style="background: #16a34a; color: #ffffff; border: none; padding: 7px 14px; border-radius: 7px; font-weight: 700; font-size: 0.825rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;"
-          >
-            <Icon name="arrow-down-tray" size={14} />
-            <span>{isExporting ? 'Mengekspor...' : 'Ekspor Excel (.xlsx)'}</span>
-          </button>
-          <button
-            onclick={() => handleExport('csv')}
-            disabled={isExporting}
-            style="background: #334155; color: #ffffff; border: none; padding: 7px 12px; border-radius: 7px; font-weight: 700; font-size: 0.825rem; cursor: pointer; white-space: nowrap;"
-          >
-            CSV
-          </button>
-        </div>
-      </div>
-
-      <!-- Submissions Table -->
-      <div style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 10px; -webkit-overflow-scrolling: touch;">
-        {#if isLoadingSubmissions}
-          <div style="text-align: center; padding: 48px; color: #94a3b8; font-weight: 500;">
-            Memuat data peserta...
-          </div>
-        {:else if activeSubmissions.length === 0}
-          <div style="text-align: center; padding: 48px; color: #64748b;">
-            Belum ada peserta yang mengerjakan kuis ini.
-          </div>
-        {:else}
-          <table style="width: 100%; border-collapse: collapse; font-size: 0.825rem; text-align: left;">
-            <thead>
-              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569;">
-                <th style="padding: 10px 12px; white-space: nowrap;">No</th>
-                <th style="padding: 10px 12px; white-space: nowrap;">Nama Peserta</th>
-                <th style="padding: 10px 12px; white-space: nowrap;">Nilai (%)</th>
-                <th style="padding: 10px 12px; white-space: nowrap;">Skor</th>
-                <th style="padding: 10px 12px; white-space: nowrap;">Status</th>
-                <th style="padding: 10px 12px; white-space: nowrap;">Waktu</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each activeSubmissions as sub, idx}
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                  <td style="padding: 10px 12px; color: #94a3b8;">{idx + 1}</td>
-                  <td style="padding: 10px 12px; font-weight: 700; color: #0f172a;">
-                    {sub.guestName || sub.userName || 'Anonim'}
-                  </td>
-                  <td style="padding: 10px 12px; font-weight: 800; color: {sub.percentage >= 70 ? '#16a34a' : '#dc2626'};">
-                    {sub.percentage}%
-                  </td>
-                  <td style="padding: 10px 12px; color: #475569;">
-                    {sub.score}/{sub.totalQuestions}
-                  </td>
-                  <td style="padding: 10px 12px;">
-                    <ChipBadge
-                      variant={sub.percentage >= 70 ? 'success' : 'danger'}
-                      label={sub.percentage >= 70 ? 'Lulus' : 'Belum Lulus'}
-                    />
-                  </td>
-                  <td style="padding: 10px 12px; color: #64748b; font-size: 0.775rem; white-space: nowrap;">
-                    {new Date(sub.createdAt).toLocaleString('id-ID', {
-                      dateStyle: 'short',
-                      timeStyle: 'short',
-                    })}
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        {/if}
-      </div>
-    </div>
-  </div>
+<!-- Post-Quiz Review & Analytics Modal -->
+{#if showReviewModal && selectedContentForReview}
+  <QuizReviewModal
+    content={selectedContentForReview}
+    isOpen={showReviewModal}
+    initialTab={reviewInitialTab}
+    onClose={() => (showReviewModal = false)}
+  />
 {/if}
 
 <!-- Content Editor Modal (Create & Edit) -->

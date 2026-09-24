@@ -7,6 +7,7 @@
   import QuizRunner from '../components/QuizRunner.svelte';
   import CombinedModule from '../components/CombinedModule.svelte';
   import ContentEditorModal from '../components/ContentEditorModal.svelte';
+  import QuizReviewModal from '../components/QuizReviewModal.svelte';
   import Icon from '../components/ui/Icon.svelte';
   import ChipBadge from '../components/ui/ChipBadge.svelte';
 
@@ -24,6 +25,7 @@
   let isLoading = $state(true);
   let errorMessage = $state<string | null>(null);
   let showEditModal = $state(false);
+  let showReviewModal = $state(false);
 
   let canEdit = $derived(auth.isSuperadmin || auth.isCreator);
 
@@ -82,7 +84,21 @@
           />
 
           {#if canEdit}
+            {#if content.type !== 'materi'}
+              <button
+                type="button"
+                class="fl-pill-btn"
+                onclick={() => (showReviewModal = true)}
+                title="Bahas butir soal kuis & analisis kesalahan peserta"
+                style="background: #f0fdfa; color: #0f766e; border: 1.5px solid #99f6e4; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap;"
+              >
+                <Icon name="sparkles" size={13} />
+                <span>Bahas Kuis</span>
+              </button>
+            {/if}
             <button
+              type="button"
+              class="fl-pill-btn"
               onclick={() => (showEditModal = true)}
               style="background: #0f766e; color: #ffffff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(15,118,110,0.25); white-space: nowrap;"
             >
@@ -129,6 +145,15 @@
     contentToEdit={content}
     onClose={() => (showEditModal = false)}
     onSaved={handleContentSaved}
+  />
+{/if}
+
+{#if content && showReviewModal}
+  <QuizReviewModal
+    {content}
+    isOpen={showReviewModal}
+    initialTab="analysis"
+    onClose={() => (showReviewModal = false)}
   />
 {/if}
 </Page>
