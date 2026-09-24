@@ -1,10 +1,12 @@
 <script lang="ts">
   import { Page } from 'framework7-svelte';
   import { api } from '../stores/api';
+  import { auth } from '../stores/auth.svelte';
   import type { Content } from '@flashlearn/shared';
   import MaterialViewer from '../components/MaterialViewer.svelte';
   import QuizRunner from '../components/QuizRunner.svelte';
   import CombinedModule from '../components/CombinedModule.svelte';
+  import ContentEditorModal from '../components/ContentEditorModal.svelte';
 
   interface Props {
     f7route?: any;
@@ -19,6 +21,9 @@
   let content = $state<Content | null>(null);
   let isLoading = $state(true);
   let errorMessage = $state<string | null>(null);
+  let showEditModal = $state(false);
+
+  let canEdit = $derived(auth.isSuperadmin || auth.isCreator);
 
   $effect(() => {
     if (id) {
@@ -45,13 +50,19 @@
       window.history.back();
     }
   }
+
+  function handleContentSaved(updated: Content) {
+    showEditModal = false;
+    content = updated;
+    loadContent();
+  }
 </script>
 
 <Page name="content-detail">
 <div class="content-detail-page" style="min-height: 100vh; padding-bottom: 40px;">
   <!-- Sub-navbar Back Bar -->
   <div style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 16px;">
-    <div style="max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+    <div style="max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
       <button
         onclick={goBack}
         style="background: none; border: none; font-size: 0.95rem; font-weight: 700; color: #0f766e; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 0;"
@@ -60,9 +71,20 @@
       </button>
 
       {#if content}
-        <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">
-          Tipe: <strong>{content.type.toUpperCase()}</strong>
-        </span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">
+            Tipe: <strong>{content.type.toUpperCase()}</strong>
+          </span>
+
+          {#if canEdit}
+            <button
+              onclick={() => (showEditModal = true)}
+              style="background: #0f766e; color: #ffffff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(15,118,110,0.25);"
+            >
+              ✏️ Edit Modul Ini
+            </button>
+          {/if}
+        </div>
       {/if}
     </div>
   </div>
@@ -93,4 +115,14 @@
     {/if}
   {/if}
 </div>
+
+{#if content && showEditModal}
+  <ContentEditorModal
+    isOpen={showEditModal}
+    workspaceId={content.workspaceId}
+    contentToEdit={content}
+    onClose={() => (showEditModal = false)}
+    onSaved={handleContentSaved}
+  />
+{/if}
 </Page>

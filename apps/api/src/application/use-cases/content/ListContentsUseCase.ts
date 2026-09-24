@@ -29,7 +29,8 @@ export class ListContentsUseCase {
     const isOwner = workspace.canBeModifiedBy(input.userId || '', isSuperadmin);
     const contents = await this.contentRepository.listByWorkspace(
       input.workspaceId,
-      !isOwner // If not owner/superadmin, only published contents
+      !isOwner, // If not owner/superadmin, only published contents
+      isOwner   // If owner/superadmin, include soft-deleted contents for restoration
     );
 
     return contents.map((c) => c.toJSON(isOwner));

@@ -11,6 +11,7 @@ export interface ContentProps {
   body: string | null;
   questions: QuizQuestion[] | null;
   isPublished: boolean;
+  deletedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -79,6 +80,7 @@ export class ContentEntity {
       body: this.props.body,
       questions: includeAnswers ? this.props.questions : this.getLearnerQuestions(),
       isPublished: this.props.isPublished,
+      deletedAt: this.props.deletedAt ? this.props.deletedAt.toISOString() : null,
       createdAt: this.props.createdAt.toISOString(),
       updatedAt: this.props.updatedAt.toISOString(),
     };
