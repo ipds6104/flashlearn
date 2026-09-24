@@ -102,8 +102,8 @@
           </p>
 
           <!-- Interactive Search Bar -->
-          <div class="fl-search-container" style="max-width: 500px;">
-            <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b; display: flex; align-items: center; pointer-events: none;">
+          <div class="fl-search-container" style="max-width: 500px; position: relative;">
+            <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b; display: flex; align-items: center; pointer-events: none; z-index: 2;">
               <Icon name="search" size={18} />
             </span>
             <input
@@ -118,13 +118,13 @@
               <button
                 type="button"
                 onclick={() => (searchQuery = '')}
-                style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 4px; color: #94a3b8; cursor: pointer; display: flex; align-items: center;"
+                style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 4px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; z-index: 2;"
                 aria-label="Hapus pencarian"
               >
                 <Icon name="xmark" size={16} />
               </button>
             {:else}
-              <span style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+              <span style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; z-index: 2;">
                 <span class="fl-kbd-badge">/</span>
               </span>
             {/if}
