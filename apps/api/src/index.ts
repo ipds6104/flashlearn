@@ -68,7 +68,7 @@ const app = new Elysia()
   .get('/c/:id', ({ params, redirect }) => redirect(`/#/content/${params.id}`, 302))
   .get('/content/:id', ({ params, redirect }) => redirect(`/#/content/${params.id}`, 302))
   .get('/workspace/:id', ({ params, redirect }) => redirect(`/#/workspace/${params.id}`, 302))
-  .all('*', ({ path }) => {
+  .all('*', ({ path, set }) => {
     if (path.startsWith('/api') || path.startsWith('/docs') || path.startsWith('/health')) {
       return;
     }
@@ -76,8 +76,14 @@ const app = new Elysia()
       const cleanPath = path.replace(/^\//, '');
       const candidate = join(publicDir, cleanPath);
       if (cleanPath && existsSync(candidate) && !statSync(candidate).isDirectory()) {
+        if (cleanPath.startsWith('assets/')) {
+          set.headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+        } else {
+          set.headers['Cache-Control'] = 'public, max-age=3600';
+        }
         return Bun.file(candidate);
       }
+      set.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
       return Bun.file(join(publicDir, 'index.html'));
     }
     return { message: '⚡ FlashLearn API Engine is operational. Web build not mounted.' };

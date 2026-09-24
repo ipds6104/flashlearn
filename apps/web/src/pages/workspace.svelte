@@ -51,8 +51,12 @@
   async function loadWorkspaceData() {
     isLoading = true;
     try {
-      workspace = await api.workspaces.get(id);
-      contents = await api.contents.listByWorkspace(id);
+      const [ws, items] = await Promise.all([
+        api.workspaces.get(id),
+        api.contents.listByWorkspace(id),
+      ]);
+      workspace = ws;
+      contents = items;
     } catch (err: any) {
       alert(`Gagal memuat workspace: ${err.message}`);
     } finally {
