@@ -79,12 +79,20 @@
       </p>
     </div>
 
-    <button
-      onclick={() => (showCreateModal = true)}
-      style="background: #0f766e; color: #ffffff; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);"
-    >
-      + Buat Workspace
-    </button>
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <button
+        onclick={() => auth.openApiKeyModal()}
+        style="background: #ffffff; color: #0f766e; border: 1.5px solid #0f766e; padding: 10px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);"
+      >
+        🔑 API Key AI
+      </button>
+      <button
+        onclick={() => (showCreateModal = true)}
+        style="background: #0f766e; color: #ffffff; border: none; padding: 11px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);"
+      >
+        + Buat Workspace
+      </button>
+    </div>
   </div>
 
   {#if !auth.isLoggedIn}

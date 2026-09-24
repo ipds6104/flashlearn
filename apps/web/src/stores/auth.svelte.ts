@@ -13,6 +13,16 @@ class AuthState {
   isSuperadmin = $derived(this.user?.role === 'superadmin');
   isCreator = $derived(this.user?.role === 'creator' || this.user?.role === 'superadmin');
 
+  showApiKeyModal = $state<boolean>(false);
+
+  openApiKeyModal() {
+    this.showApiKeyModal = true;
+  }
+
+  closeApiKeyModal() {
+    this.showApiKeyModal = false;
+  }
+
   constructor() {
     this.init();
   }

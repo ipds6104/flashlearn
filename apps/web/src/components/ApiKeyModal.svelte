@@ -138,7 +138,7 @@ Please perform the requested task using the API details above, and return the pu
 {#if isOpen}
   <!-- Backdrop -->
   <div
-    style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px;"
+    style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 16px; -webkit-overflow-scrolling: touch;"
     onclick={onClose}
     role="button"
     tabindex="0"
@@ -146,7 +146,7 @@ Please perform the requested task using the API details above, and return the pu
   >
     <!-- Modal Dialog -->
     <div
-      style="background: #ffffff; width: 100%; max-width: 620px; border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;"
+      style="background: #ffffff; width: 100%; max-width: 620px; border-radius: 20px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-height: 90vh; overflow-y: auto;"
       onclick={(e) => e.stopPropagation()}
       role="document"
     >
@@ -177,23 +177,23 @@ Please perform the requested task using the API details above, and return the pu
           <p style="font-size: 0.85rem; color: #15803d; margin: 0 0 12px 0;">
             Salin sekarang. Demi keamanan, kunci rahasia ini tidak akan ditampilkan lagi.
           </p>
-          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
             <input
               type="text"
               readonly
               value={newlyGeneratedKey}
-              style="flex: 1; font-family: monospace; background: #ffffff; border: 1px solid #bbf7d0; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; color: #0f172a;"
+              style="flex: 1; min-width: 200px; font-family: monospace; background: #ffffff; border: 1px solid #bbf7d0; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; color: #0f172a;"
             />
             <button
               onclick={() => copyToClipboard(newlyGeneratedKey!)}
-              style="background: #16a34a; color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;"
+              style="background: #16a34a; color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap;"
             >
               {copied ? 'Tersalin! ✓' : 'Salin Key'}
             </button>
           </div>
 
           <!-- Highlight: Copy for AI Agent Button -->
-          <div style="border-top: 1px dashed #86efac; padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="border-top: 1px dashed #86efac; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
             <span style="font-size: 0.8rem; color: #15803d; font-weight: 600;">
               Ingin langsung serahkan ke coding agent (AGY CLI)?
             </span>
@@ -215,13 +215,13 @@ Please perform the requested task using the API details above, and return the pu
         <div style="font-weight: 700; font-size: 0.95rem; color: #0f172a; margin-bottom: 10px;">
           Buat API Key Baru
         </div>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <input
             type="text"
             placeholder="Label (contoh: Obsidian Sync, CLI Bot)..."
             bind:value={newKeyName}
             required
-            style="flex: 1; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;"
+            style="flex: 1 1 200px; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;"
           />
           <button
             type="submit"
