@@ -66,7 +66,7 @@ export interface QuizAnswerSubmission {
 }
 
 export interface QuizSubmissionRequest {
-  guestName?: string;
+  guestName: string;
   answers: QuizAnswerSubmission[];
 }
 

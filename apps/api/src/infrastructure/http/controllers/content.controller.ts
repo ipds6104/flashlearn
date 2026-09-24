@@ -231,7 +231,7 @@ export const contentController = new Elysia({ prefix: '/api/v1/contents' })
         id: t.String({ description: 'Content UUID with quiz' }),
       }),
       body: t.Object({
-        guestName: t.Optional(t.String({ description: 'Participant name' })),
+        guestName: t.String({ minLength: 2, description: 'Participant name (required, min 2 chars)' }),
         answers: t.Array(
           t.Object({
             questionId: t.String(),

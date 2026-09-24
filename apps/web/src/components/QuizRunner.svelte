@@ -23,19 +23,23 @@
   let guestName = $state(
     auth.user?.name || localStorage.getItem('flashlearn_guest_name') || ''
   );
-  let hasStartedQuiz = $state(auth.isLoggedIn);
+  let hasStartedQuiz = $state(auth.isLoggedIn && Boolean(auth.user?.name));
   let isCheckingName = $state(false);
   let nameFeedback = $state<{ isTaken: boolean; suggestedName: string } | null>(null);
+  let validationError = $state<string | null>(null);
+
+  const isNameValid = $derived(guestName.trim().length >= 2);
 
   async function handleNameCheck() {
-    if (!guestName.trim() || auth.isLoggedIn) {
+    const trimmed = guestName.trim();
+    if (!trimmed || trimmed.length < 2 || auth.isLoggedIn) {
       nameFeedback = null;
       return;
     }
 
     isCheckingName = true;
     try {
-      const res = await api.contents.checkGuestName(content.id, guestName.trim());
+      const res = await api.contents.checkGuestName(content.id, trimmed);
       nameFeedback = res.isTaken ? res : null;
     } catch {
       nameFeedback = null;
@@ -48,15 +52,18 @@
     if (nameFeedback?.suggestedName) {
       guestName = nameFeedback.suggestedName;
       nameFeedback = null;
+      validationError = null;
     }
   }
 
-  function startQuiz(anonymous = false) {
-    if (anonymous) {
-      guestName = 'Anonim';
-    } else if (guestName.trim()) {
-      localStorage.setItem('flashlearn_guest_name', guestName.trim());
+  function startQuiz() {
+    const trimmed = guestName.trim();
+    if (!trimmed || trimmed.length < 2) {
+      validationError = 'Silakan masukkan nama atau panggilanmu (minimal 2 karakter) sebelum memulai kuis.';
+      return;
     }
+    validationError = null;
+    localStorage.setItem('flashlearn_guest_name', trimmed);
     hasStartedQuiz = true;
   }
 
@@ -66,10 +73,16 @@
   }
 
   async function submitQuiz() {
+    const trimmed = guestName.trim();
+    if (!trimmed || trimmed.length < 2) {
+      alert('Nama wajib diisi minimal 2 karakter sebelum mengirim jawaban kuis.');
+      return;
+    }
+
     isSubmitting = true;
     try {
       const payload = {
-        guestName: guestName.trim() || 'Anonim',
+        guestName: trimmed,
         answers: Object.entries(userAnswers).map(([questionId, selectedOptionId]) => ({
           questionId,
           selectedOptionId,
@@ -157,17 +170,30 @@
       <!-- Single-field Name Input with Validation & Auto-disambiguation -->
       <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
         <label for="participant-name" style="display: block; font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 6px;">
-          Nama / Panggilanmu:
+          Nama Lengkap / Panggilanmu <span style="color: #dc2626;">*</span>:
         </label>
         <div style="position: relative;">
           <input
             id="participant-name"
             type="text"
-            placeholder="Masukkan nama untuk hasil kuis..."
+            placeholder="Ketik nama lengkap atau panggilanmu..."
             bind:value={guestName}
             onblur={handleNameCheck}
-            oninput={() => (nameFeedback = null)}
-            style="width: 100%; padding: 12px 16px; border: 2px solid {nameFeedback ? '#f59e0b' : '#cbd5e1'}; border-radius: 10px; font-size: 1rem; color: #0f172a; box-sizing: border-box;"
+            oninput={() => {
+              nameFeedback = null;
+              validationError = null;
+            }}
+            onkeydown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (isNameValid && !isCheckingName) {
+                  startQuiz();
+                } else if (!isNameValid) {
+                  validationError = 'Silakan masukkan nama atau panggilanmu (minimal 2 karakter) sebelum memulai kuis.';
+                }
+              }
+            }}
+            style="width: 100%; padding: 12px 16px; border: 2px solid {validationError ? '#ef4444' : nameFeedback ? '#f59e0b' : '#cbd5e1'}; border-radius: 10px; font-size: 1rem; color: #0f172a; box-sizing: border-box;"
           />
           {#if isCheckingName}
             <span style="position: absolute; right: 12px; top: 14px; font-size: 0.8rem; color: #94a3b8;">
@@ -175,6 +201,13 @@
             </span>
           {/if}
         </div>
+
+        <!-- Validation Error Message -->
+        {#if validationError}
+          <div style="margin-top: 8px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; color: #b91c1c; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            ⚠️ {validationError}
+          </div>
+        {/if}
 
         <!-- Disambiguation Suggestion if duplicate name is found -->
         {#if nameFeedback?.isTaken}
@@ -193,25 +226,25 @@
           </div>
         {/if}
         <div style="font-size: 0.75rem; color: #64748b; margin-top: 6px;">
-          Nama akan ditampilkan pada lembar skor dan rekap evaluasi kuis.
+          Nama wajib diisi untuk pencatatan skor, sertifikat, dan statistik pengerjaan.
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Action Button -->
       <div style="display: flex; flex-direction: column; gap: 10px;">
         <button
-          onclick={() => startQuiz(false)}
-          style="background: #0f766e; color: #ffffff; border: none; padding: 14px 24px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.3);"
+          onclick={startQuiz}
+          disabled={!isNameValid || isCheckingName}
+          style="background: {!isNameValid || isCheckingName ? '#94a3b8' : '#0f766e'}; color: #ffffff; border: none; padding: 14px 24px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; cursor: {!isNameValid || isCheckingName ? 'not-allowed' : 'pointer'}; box-shadow: {!isNameValid || isCheckingName ? 'none' : '0 4px 14px rgba(15, 118, 110, 0.3)'}; transition: all 0.2s ease; opacity: {!isNameValid || isCheckingName ? '0.7' : '1'};"
         >
-          Mulai Mengerjakan Kuis 🚀
+          {isCheckingName ? 'Memeriksa Nama...' : 'Mulai Mengerjakan Kuis 🚀'}
         </button>
 
-        <button
-          onclick={() => startQuiz(true)}
-          style="background: none; border: none; color: #64748b; font-size: 0.85rem; font-weight: 600; cursor: pointer; padding: 6px;"
-        >
-          Lewati & Kerjakan sebagai Anonim
-        </button>
+        {#if !isNameValid}
+          <div style="font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 4px;">
+            🔒 Masukkan nama terlebih dahulu untuk membuka tombol mulai.
+          </div>
+        {/if}
       </div>
     </div>
   {:else}

@@ -19,6 +19,11 @@ export class SubmitQuizUseCase {
       throw new Error('This content does not contain a quiz');
     }
 
+    const trimmedName = submission.guestName?.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      throw new Error('Nama peserta wajib diisi minimal 2 karakter sebelum mengerjakan kuis');
+    }
+
     const answerMap = new Map<string, string>();
     for (const ans of submission.answers) {
       answerMap.set(ans.questionId, ans.selectedOptionId);
@@ -56,7 +61,7 @@ export class SubmitQuizUseCase {
       db.insert(quizSubmissions)
         .values({
           contentId,
-          guestName: submission.guestName || 'Anonim',
+          guestName: trimmedName,
           score: correctCount,
           totalQuestions,
           percentage,
@@ -66,7 +71,7 @@ export class SubmitQuizUseCase {
     });
 
     return {
-      guestName: submission.guestName,
+      guestName: trimmedName,
       score: correctCount,
       totalQuestions,
       correctAnswers: correctCount,
