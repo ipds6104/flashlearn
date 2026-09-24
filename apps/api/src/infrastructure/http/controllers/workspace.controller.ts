@@ -170,4 +170,69 @@ export const workspaceController = new Elysia({ prefix: '/api/v1/workspaces' })
           'Deletes a workspace. Creators can only delete their own workspaces. Superadmins can delete any workspace.',
       },
     }
+  )
+  .post(
+    '/:id/rollback',
+    async ({ headers, params, body, set }) => {
+      const auth = await resolveAuth(headers);
+      if (!auth.user || (auth.role !== 'creator' && auth.role !== 'superadmin')) {
+        set.status = 403;
+        return { error: 'Forbidden' };
+      }
+
+      try {
+        const targetVersion = (body as any)?.versionNumber;
+        return await container.rollbackWorkspaceUseCase.execute(
+          params.id,
+          auth.user.id,
+          auth.role,
+          targetVersion
+        );
+      } catch (err: any) {
+        set.status = 400;
+        return { error: err.message };
+      }
+    },
+    {
+      params: t.Object({
+        id: t.String({ description: 'Workspace UUID' }),
+      }),
+      body: t.Optional(
+        t.Object({
+          versionNumber: t.Optional(t.Integer({ description: 'Target version number' })),
+        })
+      ),
+      detail: {
+        tags: ['Workspaces'],
+        summary: 'Rollback Workspace',
+        description: 'Reverts workspace metadata to an earlier version snapshot.',
+      },
+    }
+  )
+  .post(
+    '/:id/restore',
+    async ({ headers, params, set }) => {
+      const auth = await resolveAuth(headers);
+      if (!auth.user || (auth.role !== 'creator' && auth.role !== 'superadmin')) {
+        set.status = 403;
+        return { error: 'Forbidden' };
+      }
+
+      try {
+        return await container.restoreWorkspaceUseCase.execute(params.id, auth.user.id, auth.role);
+      } catch (err: any) {
+        set.status = 400;
+        return { error: err.message };
+      }
+    },
+    {
+      params: t.Object({
+        id: t.String({ description: 'Workspace UUID' }),
+      }),
+      detail: {
+        tags: ['Workspaces'],
+        summary: 'Restore Soft-Deleted Workspace',
+        description: 'Recovers a soft-deleted workspace back to active status.',
+      },
+    }
   );

@@ -49,6 +49,13 @@ export const api = {
       fetchWithAuth(`/api/v1/workspaces/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string): Promise<{ success: boolean }> =>
       fetchWithAuth(`/api/v1/workspaces/${id}`, { method: 'DELETE' }),
+    rollback: (id: string, versionNumber?: number): Promise<Workspace> =>
+      fetchWithAuth(`/api/v1/workspaces/${id}/rollback`, {
+        method: 'POST',
+        body: JSON.stringify({ versionNumber }),
+      }),
+    restore: (id: string): Promise<Workspace> =>
+      fetchWithAuth(`/api/v1/workspaces/${id}/restore`, { method: 'POST' }),
   },
   contents: {
     listByWorkspace: (workspaceId: string): Promise<Content[]> =>
@@ -61,6 +68,36 @@ export const api = {
       fetchWithAuth(`/api/v1/contents/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string): Promise<{ success: boolean }> =>
       fetchWithAuth(`/api/v1/contents/${id}`, { method: 'DELETE' }),
+    rollback: (id: string, versionNumber?: number): Promise<Content> =>
+      fetchWithAuth(`/api/v1/contents/${id}/rollback`, {
+        method: 'POST',
+        body: JSON.stringify({ versionNumber }),
+      }),
+    restore: (id: string): Promise<Content> =>
+      fetchWithAuth(`/api/v1/contents/${id}/restore`, { method: 'POST' }),
+    getVersions: (id: string): Promise<any[]> =>
+      fetchWithAuth(`/api/v1/contents/${id}/versions`),
+    getSubmissions: (id: string): Promise<any[]> =>
+      fetchWithAuth(`/api/v1/contents/${id}/submissions`),
+    async downloadExport(id: string, format: 'xlsx' | 'csv' = 'xlsx') {
+      const headers = new Headers();
+      if (auth.token) {
+        headers.set('Authorization', `Bearer ${auth.token}`);
+      }
+      const res = await fetch(`${API_URL}/api/v1/contents/${id}/export?format=${format}`, {
+        headers,
+      });
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `flashlearn_submissions_${id}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    },
     checkGuestName: (id: string, name: string): Promise<{ isTaken: boolean; suggestedName: string }> =>
       fetchWithAuth(`/api/v1/contents/${id}/check-name`, {
         method: 'POST',

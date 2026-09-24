@@ -25,10 +25,18 @@ export interface UpdateContentData {
 }
 
 export interface IContentRepository {
-  findById(id: string): Promise<ContentEntity | null>;
+  findById(id: string, includeDeleted?: boolean): Promise<ContentEntity | null>;
   findBySlug(workspaceId: string, slug: string): Promise<ContentEntity | null>;
-  listByWorkspace(workspaceId: string, onlyPublished?: boolean): Promise<ContentEntity[]>;
+  listByWorkspace(workspaceId: string, onlyPublished?: boolean, includeDeleted?: boolean): Promise<ContentEntity[]>;
   create(data: CreateContentData): Promise<ContentEntity>;
   update(id: string, data: UpdateContentData): Promise<ContentEntity | null>;
   delete(id: string): Promise<boolean>;
+  softDelete(id: string): Promise<boolean>;
+  restore(id: string): Promise<ContentEntity | null>;
+  createVersion(contentId: string, versionNumber: number, action: string, snapshot: any, changedBy?: string | null): Promise<void>;
+  getLatestVersionNumber(contentId: string): Promise<number>;
+  getVersion(contentId: string, versionNumber: number): Promise<any | null>;
+  listVersions(contentId: string): Promise<any[]>;
+  listSubmissions(contentId: string): Promise<any[]>;
+  checkGuestNameExists(contentId: string, name: string): Promise<boolean>;
 }

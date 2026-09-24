@@ -16,6 +16,15 @@ export class DeleteWorkspaceUseCase {
       throw new Error('Forbidden: You can only delete workspaces you created');
     }
 
-    return await this.workspaceRepository.delete(id);
+    const currentVersion = await this.workspaceRepository.getLatestVersionNumber(id);
+    await this.workspaceRepository.createVersion(
+      id,
+      currentVersion + 1,
+      'delete:soft',
+      existing.toJSON(),
+      currentUserId
+    );
+
+    return await this.workspaceRepository.softDelete(id);
   }
 }

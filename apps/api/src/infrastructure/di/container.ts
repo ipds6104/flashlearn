@@ -14,6 +14,8 @@ import { ListWorkspacesUseCase } from '../../application/use-cases/workspace/Lis
 import { GetWorkspaceByIdUseCase } from '../../application/use-cases/workspace/GetWorkspaceByIdUseCase';
 import { UpdateWorkspaceUseCase } from '../../application/use-cases/workspace/UpdateWorkspaceUseCase';
 import { DeleteWorkspaceUseCase } from '../../application/use-cases/workspace/DeleteWorkspaceUseCase';
+import { RollbackWorkspaceUseCase } from '../../application/use-cases/workspace/RollbackWorkspaceUseCase';
+import { RestoreWorkspaceUseCase } from '../../application/use-cases/workspace/RestoreWorkspaceUseCase';
 
 import { CreateContentUseCase } from '../../application/use-cases/content/CreateContentUseCase';
 import { ListContentsUseCase } from '../../application/use-cases/content/ListContentsUseCase';
@@ -23,6 +25,11 @@ import { DeleteContentUseCase } from '../../application/use-cases/content/Delete
 import { SubmitQuizUseCase } from '../../application/use-cases/content/SubmitQuizUseCase';
 import { GenerateFlashcardsUseCase } from '../../application/use-cases/content/GenerateFlashcardsUseCase';
 import { CheckGuestNameUseCase } from '../../application/use-cases/content/CheckGuestNameUseCase';
+import { RollbackContentUseCase } from '../../application/use-cases/content/RollbackContentUseCase';
+import { RestoreContentUseCase } from '../../application/use-cases/content/RestoreContentUseCase';
+import { ListContentVersionsUseCase } from '../../application/use-cases/content/ListContentVersionsUseCase';
+import { GetSubmissionsUseCase } from '../../application/use-cases/content/GetSubmissionsUseCase';
+import { ExportSubmissionsUseCase } from '../../application/use-cases/content/ExportSubmissionsUseCase';
 
 import { CreateApiKeyUseCase } from '../../application/use-cases/apikey/CreateApiKeyUseCase';
 import { ListApiKeysUseCase } from '../../application/use-cases/apikey/ListApiKeysUseCase';
@@ -54,6 +61,8 @@ export class Container {
   public readonly getWorkspaceByIdUseCase = new GetWorkspaceByIdUseCase(this.workspaceRepository);
   public readonly updateWorkspaceUseCase = new UpdateWorkspaceUseCase(this.workspaceRepository);
   public readonly deleteWorkspaceUseCase = new DeleteWorkspaceUseCase(this.workspaceRepository);
+  public readonly rollbackWorkspaceUseCase = new RollbackWorkspaceUseCase(this.workspaceRepository);
+  public readonly restoreWorkspaceUseCase = new RestoreWorkspaceUseCase(this.workspaceRepository);
 
   public readonly createContentUseCase = new CreateContentUseCase(
     this.contentRepository,
@@ -78,6 +87,27 @@ export class Container {
   public readonly submitQuizUseCase = new SubmitQuizUseCase(this.contentRepository);
   public readonly generateFlashcardsUseCase = new GenerateFlashcardsUseCase(this.contentRepository);
   public readonly checkGuestNameUseCase = new CheckGuestNameUseCase();
+
+  public readonly rollbackContentUseCase = new RollbackContentUseCase(
+    this.contentRepository,
+    this.workspaceRepository
+  );
+  public readonly restoreContentUseCase = new RestoreContentUseCase(
+    this.contentRepository,
+    this.workspaceRepository
+  );
+  public readonly listContentVersionsUseCase = new ListContentVersionsUseCase(
+    this.contentRepository,
+    this.workspaceRepository
+  );
+  public readonly getSubmissionsUseCase = new GetSubmissionsUseCase(
+    this.contentRepository,
+    this.workspaceRepository
+  );
+  public readonly exportSubmissionsUseCase = new ExportSubmissionsUseCase(
+    this.contentRepository,
+    this.workspaceRepository
+  );
 
   public readonly createApiKeyUseCase = new CreateApiKeyUseCase(this.apiKeyRepository);
   public readonly listApiKeysUseCase = new ListApiKeysUseCase(this.apiKeyRepository);

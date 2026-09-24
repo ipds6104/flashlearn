@@ -35,6 +35,15 @@ export class UpdateContentUseCase {
       throw new Error('Failed to update content');
     }
 
+    const currentVersion = await this.contentRepository.getLatestVersionNumber(contentId);
+    await this.contentRepository.createVersion(
+      contentId,
+      currentVersion + 1,
+      'update',
+      updated.toJSON(true),
+      currentUserId
+    );
+
     return updated.toJSON(true);
   }
 }

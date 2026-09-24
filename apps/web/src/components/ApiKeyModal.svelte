@@ -15,6 +15,7 @@
   let newlyGeneratedKey = $state<string | null>(null);
   let isGenerating = $state(false);
   let copied = $state(false);
+  let aiCopied = $state(false);
 
   $effect(() => {
     if (isOpen) {
@@ -70,6 +71,68 @@
     copied = true;
     setTimeout(() => (copied = false), 2000);
   }
+
+  function copyForAi(key: string) {
+    const origin = window.location.origin;
+    const prompt = `# FlashLearn AI Assistant Context
+
+You have programmatic access to the **FlashLearn Education Engine** to create and manage workspaces, modules (materi, quiz, combined), and retrieve analytics.
+
+## Connection Details
+- **Base URL:** ${origin}/api/v1
+- **API Key:** ${key}
+- **OpenAPI Scalar Documentation:** ${origin}/docs
+- **Authentication Header:** \`Authorization: Bearer ${key}\`
+
+## Quick Start Workflows:
+1. **List My Workspaces:**
+   \`GET ${origin}/api/v1/workspaces?scope=mine\`
+
+2. **Create New Content Module (Materi / Quiz / Combined):**
+   \`POST ${origin}/api/v1/contents\`
+   Header: \`Authorization: Bearer ${key}\`, \`Content-Type: application/json\`
+   Body JSON:
+   {
+     "workspaceId": "<workspace-uuid>",
+     "type": "quiz", // or "materi" or "combined"
+     "title": "Judul Materi / Kuis",
+     "summary": "Ringkasan singkat",
+     "body": "# Isi Markdown Materi...",
+     "questions": [
+       {
+         "id": "q1",
+         "question": "Soal kuis?",
+         "options": [
+           { "id": "opt1", "text": "Pilihan A", "isCorrect": true },
+           { "id": "opt2", "text": "Pilihan B", "isCorrect": false }
+         ],
+         "explanation": "Penjelasan detail mengapa opsi A benar.",
+         "difficulty": "medium"
+       }
+     ],
+     "isPublished": true
+   }
+
+3. **Public Shareable Link for Learners:**
+   Once created, return this link to the user to share with students/WhatsApp group:
+   \`${origin}/c/{content-id}\`
+
+4. **Retrieve Quiz Analytics & Export Submissions:**
+   - JSON Submissions: \`GET ${origin}/api/v1/contents/{content-id}/submissions\`
+   - Excel Export (.xlsx): \`GET ${origin}/api/v1/contents/{content-id}/export?format=xlsx\`
+   - CSV Export: \`GET ${origin}/api/v1/contents/{content-id}/export?format=csv\`
+
+5. **Reversible CRUD (Rollback / Undo):**
+   - Rollback to previous version snapshot: \`POST ${origin}/api/v1/contents/{content-id}/rollback\`
+   - Restore soft-deleted content: \`POST ${origin}/api/v1/contents/{content-id}/restore\`
+
+Task:
+Please perform the requested task using the API details above, and return the public shareable link so the creator can preview and share it.`;
+
+    navigator.clipboard.writeText(prompt);
+    aiCopied = true;
+    setTimeout(() => (aiCopied = false), 2500);
+  }
 </script>
 
 {#if isOpen}
@@ -83,7 +146,7 @@
   >
     <!-- Modal Dialog -->
     <div
-      style="background: #ffffff; width: 100%; max-width: 580px; border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;"
+      style="background: #ffffff; width: 100%; max-width: 620px; border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;"
       onclick={(e) => e.stopPropagation()}
       role="document"
     >
@@ -100,21 +163,21 @@
       </div>
 
       <p style="color: #64748b; font-size: 0.9rem; margin-top: 0; margin-bottom: 20px; line-height: 1.5;">
-        Gunakan API Key untuk melakukan operasi CRUD (Workspaces, Contents, Quiz) secara otomatis via REST API dengan hak akses akunmu.
+        Gunakan API Key untuk mengizinkan coding agent (seperti AGY CLI atau Antigravity) membuat kuis, mengedit modul, mengekspor hasil ke Excel, dan melakukan rollback otomatis via REST API.
       </p>
 
       <!-- Newly Generated Secret Warning -->
       {#if newlyGeneratedKey}
         <div
-          style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 12px; padding: 16px; margin-bottom: 20px;"
+          style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 14px; padding: 18px; margin-bottom: 20px;"
         >
           <div style="font-weight: 700; color: #166534; font-size: 0.95rem; margin-bottom: 6px;">
             ✓ API Key Berhasil Dibuat!
           </div>
-          <p style="font-size: 0.85rem; color: #15803d; margin: 0 0 10px 0;">
+          <p style="font-size: 0.85rem; color: #15803d; margin: 0 0 12px 0;">
             Salin sekarang. Demi keamanan, kunci rahasia ini tidak akan ditampilkan lagi.
           </p>
-          <div style="display: flex; gap: 8px; align-items: center;">
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
             <input
               type="text"
               readonly
@@ -123,9 +186,22 @@
             />
             <button
               onclick={() => copyToClipboard(newlyGeneratedKey!)}
-              style="background: #16a34a; color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;"
+              style="background: #16a34a; color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;"
             >
-              {copied ? 'Tersalin! ✓' : 'Salin'}
+              {copied ? 'Tersalin! ✓' : 'Salin Key'}
+            </button>
+          </div>
+
+          <!-- Highlight: Copy for AI Agent Button -->
+          <div style="border-top: 1px dashed #86efac; padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; color: #15803d; font-weight: 600;">
+              Ingin langsung serahkan ke coding agent (AGY CLI)?
+            </span>
+            <button
+              onclick={() => copyForAi(newlyGeneratedKey!)}
+              style="background: linear-gradient(135deg, #4f46e5, #0f766e); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);"
+            >
+              🤖 {aiCopied ? 'Tersalin untuk AI! ✓' : 'Copy for AI Agent'}
             </button>
           </div>
         </div>

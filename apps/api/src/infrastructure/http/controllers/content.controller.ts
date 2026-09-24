@@ -269,4 +269,166 @@ export const contentController = new Elysia({ prefix: '/api/v1/contents' })
           'Converts the quiz questions of the content into interactive flashcards for instant post-quiz active recall revision.',
       },
     }
+  )
+  .post(
+    '/:id/rollback',
+    async ({ headers, params, body, set }) => {
+      const auth = await resolveAuth(headers);
+      if (!auth.user || (auth.role !== 'creator' && auth.role !== 'superadmin')) {
+        set.status = 403;
+        return { error: 'Forbidden' };
+      }
+
+      try {
+        const targetVersion = (body as any)?.versionNumber;
+        return await container.rollbackContentUseCase.execute(
+          params.id,
+          auth.user.id,
+          auth.role,
+          targetVersion
+        );
+      } catch (err: any) {
+        set.status = 400;
+        return { error: err.message };
+      }
+    },
+    {
+      params: t.Object({
+        id: t.String({ description: 'Content UUID' }),
+      }),
+      body: t.Optional(
+        t.Object({
+          versionNumber: t.Optional(t.Integer({ description: 'Target version number to rollback to' })),
+        })
+      ),
+      detail: {
+        tags: ['Contents'],
+        summary: 'Rollback Content to Previous Version',
+        description: 'Reverts content fields to an earlier version snapshot.',
+      },
+    }
+  )
+  .post(
+    '/:id/restore',
+    async ({ headers, params, set }) => {
+      const auth = await resolveAuth(headers);
+      if (!auth.user || (auth.role !== 'creator' && auth.role !== 'superadmin')) {
+        set.status = 403;
+        return { error: 'Forbidden' };
+      }
+
+      try {
+        return await container.restoreContentUseCase.execute(params.id, auth.user.id, auth.role);
+      } catch (err: any) {
+        set.status = 400;
+        return { error: err.message };
+      }
+    },
+    {
+      params: t.Object({
+        id: t.String({ description: 'Content UUID' }),
+      }),
+      detail: {
+        tags: ['Contents'],
+        summary: 'Restore Soft-Deleted Content',
+        description: 'Recovers a soft-deleted content item back to active status.',
+      },
+    }
+  )
+  .get(
+    '/:id/versions',
+    async ({ headers, params, set }) => {
+      const auth = await resolveAuth(headers);
+      if (!auth.user || (auth.role !== 'creator' && auth.role !== 'superadmin')) {
+        set.status = 403;
+        return { error: 'Forbidden' };
+      }
+
+      try {
+        return await container.listContentVersionsUseCase.execute(params.id, auth.user.id, auth.role);
+      } catch (err: any) {
+        set.status = 400;
+        return { error: err.message };
+      }
+    },
+    {
+      params: t.Object({
+        id: t.String({ description: 'Content UUID' }),
+      }),
+      detail: {
+        tags: ['Contents'],
+        summary: 'List Content Version History',
+        description: 'Returns historical snapshots and actions performed on this content.',
+      },
+    }
+  )
+  .get(
+    '/:id/submissions',
+    async ({ headers, params, set }) => {
+      const auth = await resolveAuth(headers);
+      if (!auth.user || (auth.role !== 'creator' && auth.role !== 'superadmin')) {
+        set.status = 403;
+        return { error: 'Forbidden' };
+      }
+
+      try {
+        return await container.getSubmissionsUseCase.execute(params.id, auth.user.id, auth.role);
+      } catch (err: any) {
+        set.status = 400;
+        return { error: err.message };
+      }
+    },
+    {
+      params: t.Object({
+        id: t.String({ description: 'Content UUID' }),
+      }),
+      detail: {
+        tags: ['Quiz & Flashcards'],
+        summary: 'List Quiz Submissions',
+        description: 'Returns list of participant attempts for creator review and analytics.',
+      },
+    }
+  )
+  .get(
+    '/:id/export',
+    async ({ headers, params, query, set }) => {
+      const auth = await resolveAuth(headers);
+      if (!auth.user || (auth.role !== 'creator' && auth.role !== 'superadmin')) {
+        set.status = 403;
+        return { error: 'Forbidden' };
+      }
+
+      try {
+        const format = (query.format as 'xlsx' | 'csv') || 'xlsx';
+        const result = await container.exportSubmissionsUseCase.execute(
+          params.id,
+          auth.user.id,
+          auth.role,
+          format
+        );
+
+        set.headers['Content-Type'] = result.mimeType;
+        set.headers['Content-Disposition'] = `attachment; filename="${result.filename}"`;
+        return result.buffer;
+      } catch (err: any) {
+        set.status = 400;
+        return { error: err.message };
+      }
+    },
+    {
+      params: t.Object({
+        id: t.String({ description: 'Content UUID' }),
+      }),
+      query: t.Optional(
+        t.Object({
+          format: t.Optional(t.Union([t.Literal('xlsx'), t.Literal('csv')])),
+        })
+      ),
+      detail: {
+        tags: ['Quiz & Flashcards'],
+        summary: 'Export Quiz Submissions to Excel/CSV',
+        description:
+          'Downloads a formatted Excel (.xlsx) spreadsheet or CSV file containing 1 row per participant attempt with full timestamps.',
+      },
+    }
   );

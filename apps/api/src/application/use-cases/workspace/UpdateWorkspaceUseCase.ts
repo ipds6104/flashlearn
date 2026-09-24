@@ -26,6 +26,15 @@ export class UpdateWorkspaceUseCase {
       throw new Error('Failed to update workspace');
     }
 
+    const currentVersion = await this.workspaceRepository.getLatestVersionNumber(id);
+    await this.workspaceRepository.createVersion(
+      id,
+      currentVersion + 1,
+      'update',
+      updated.toJSON(),
+      currentUserId
+    );
+
     return updated.toJSON();
   }
 }

@@ -24,6 +24,7 @@ export interface Workspace {
   creatorName?: string;
   creatorEmail?: string;
   contentCount?: number;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -54,6 +55,7 @@ export interface Content {
   body: string | null; // Markdown for 'materi' and 'combined'
   questions: QuizQuestion[] | null; // Questions for 'quiz' and 'combined'
   isPublished: boolean;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -166,4 +168,41 @@ export interface CreateApiKeyRequest {
   name: string;
   permissions?: string[];
   expiresInDays?: number;
+}
+
+export interface ContentVersion {
+  id: string;
+  contentId: string;
+  versionNumber: number;
+  action: 'create' | 'update' | 'rollback';
+  snapshot: Record<string, any>;
+  changedBy: string | null;
+  createdAt: string;
+}
+
+export interface WorkspaceVersion {
+  id: string;
+  workspaceId: string;
+  versionNumber: number;
+  action: 'create' | 'update' | 'rollback';
+  snapshot: Record<string, any>;
+  changedBy: string | null;
+  createdAt: string;
+}
+
+export interface QuizSubmissionRecord {
+  id: string;
+  contentId: string;
+  guestName: string | null;
+  userName?: string | null;
+  userEmail?: string | null;
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  answers?: Record<string, any>;
+  createdAt: string;
+}
+
+export interface RollbackRequest {
+  versionNumber?: number;
 }

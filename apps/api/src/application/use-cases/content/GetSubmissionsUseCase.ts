@@ -1,14 +1,18 @@
 import type { IContentRepository } from '../../../domain/ports/IContentRepository';
 import type { IWorkspaceRepository } from '../../../domain/ports/IWorkspaceRepository';
-import type { UserRole } from '@flashlearn/shared';
+import type { QuizSubmissionRecord, UserRole } from '@flashlearn/shared';
 
-export class DeleteContentUseCase {
+export class GetSubmissionsUseCase {
   constructor(
     private readonly contentRepository: IContentRepository,
     private readonly workspaceRepository: IWorkspaceRepository
   ) {}
 
-  async execute(contentId: string, currentUserId: string, role: UserRole): Promise<boolean> {
+  async execute(
+    contentId: string,
+    currentUserId: string,
+    role: UserRole
+  ): Promise<QuizSubmissionRecord[]> {
     const isSuperadmin = role === 'superadmin';
     const content = await this.contentRepository.findById(contentId);
 
@@ -22,18 +26,21 @@ export class DeleteContentUseCase {
     }
 
     if (!workspace.canBeModifiedBy(currentUserId, isSuperadmin)) {
-      throw new Error('Forbidden: You can only delete contents in workspaces you created');
+      throw new Error('Forbidden: You can only view submissions from your own workspaces');
     }
 
-    const currentVersion = await this.contentRepository.getLatestVersionNumber(contentId);
-    await this.contentRepository.createVersion(
-      contentId,
-      currentVersion + 1,
-      'delete:soft',
-      content.toJSON(true),
-      currentUserId
-    );
-
-    return await this.contentRepository.softDelete(contentId);
+    const rows = await this.contentRepository.listSubmissions(contentId);
+    return rows.map((r) => ({
+      id: r.id,
+      contentId: r.contentId,
+      guestName: r.guestName,
+      userName: r.userName,
+      userEmail: r.userEmail,
+      score: r.score,
+      totalQuestions: r.totalQuestions,
+      percentage: r.percentage,
+      answers: r.answers,
+      createdAt: r.createdAt.toISOString(),
+    }));
   }
 }

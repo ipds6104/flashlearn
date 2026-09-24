@@ -31,6 +31,14 @@ export class CreateWorkspaceUseCase {
       creatorId,
     });
 
+    await this.workspaceRepository.createVersion(
+      entity.id,
+      1,
+      'create',
+      entity.toJSON(),
+      creatorId
+    );
+
     return entity.toJSON();
   }
 }

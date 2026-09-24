@@ -53,6 +53,14 @@ export class CreateContentUseCase {
       isPublished: input.isPublished !== undefined ? input.isPublished : true,
     });
 
+    await this.contentRepository.createVersion(
+      entity.id,
+      1,
+      'create',
+      entity.toJSON(true),
+      currentUserId
+    );
+
     return entity.toJSON();
   }
 }

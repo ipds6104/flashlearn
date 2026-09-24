@@ -21,8 +21,19 @@ export const workspaces = pgTable('workspaces', {
   icon: text('icon'),
   isPublic: boolean('is_public').default(true).notNull(),
   creatorId: uuid('creator_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const workspaceVersions = pgTable('workspace_versions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  workspaceId: uuid('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }).notNull(),
+  versionNumber: integer('version_number').notNull(),
+  action: text('action').notNull(), // 'create', 'update', 'rollback'
+  snapshot: jsonb('snapshot').notNull(),
+  changedBy: uuid('changed_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const contents = pgTable('contents', {
@@ -36,8 +47,19 @@ export const contents = pgTable('contents', {
   body: text('body'), // Markdown body for 'materi' & 'combined'
   questions: jsonb('questions').$type<QuizQuestion[]>(), // Array of QuizQuestion
   isPublished: boolean('is_published').default(true).notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const contentVersions = pgTable('content_versions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  contentId: uuid('content_id').references(() => contents.id, { onDelete: 'cascade' }).notNull(),
+  versionNumber: integer('version_number').notNull(),
+  action: text('action').notNull(), // 'create', 'update', 'rollback'
+  snapshot: jsonb('snapshot').notNull(),
+  changedBy: uuid('changed_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const apiKeys = pgTable('api_keys', {
