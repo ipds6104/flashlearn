@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' &
 class AuthState {
   token = $state<string | null>(localStorage.getItem('flashlearn_token'));
   user = $state<User | null>(null);
+  googleClientId = $state<string>('');
   isLoading = $state<boolean>(true);
 
   isLoggedIn = $derived(!!this.token && !!this.user);
@@ -17,10 +18,25 @@ class AuthState {
   }
 
   async init() {
+    await this.fetchConfig();
     if (this.token) {
       await this.fetchMe();
     } else {
       this.isLoading = false;
+    }
+  }
+
+  async fetchConfig() {
+    try {
+      const res = await fetch(`${API_URL}/api/v1/auth/config`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.googleClientId) {
+          this.googleClientId = data.googleClientId;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to fetch auth config:', e);
     }
   }
 

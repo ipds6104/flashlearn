@@ -52,4 +52,19 @@ export const authController = new Elysia({ prefix: '/api/v1/auth' })
         description: 'Returns profile details for the currently authenticated session or API key.',
       },
     }
+  )
+  .get(
+    '/config',
+    () => {
+      return {
+        googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+      };
+    },
+    {
+      detail: {
+        tags: ['Authentication'],
+        summary: 'Public Authentication Configuration',
+        description: 'Returns public client configuration such as Google Client ID.',
+      },
+    }
   );

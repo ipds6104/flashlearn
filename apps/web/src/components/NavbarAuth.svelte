@@ -5,17 +5,20 @@
   let showApiKeyModal = $state(false);
   let googleButtonContainer: HTMLDivElement | undefined = $state();
 
-  const GOOGLE_CLIENT_ID =
+  const clientId = $derived(
+    auth.googleClientId ||
     import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-    'your-google-client-id.apps.googleusercontent.com';
+    '133588067257-0huo4ja0kaavpg704si2htphl0kvgobt.apps.googleusercontent.com'
+  );
 
   $effect(() => {
-    if (!auth.isLoggedIn && googleButtonContainer) {
+    if (!auth.isLoggedIn && googleButtonContainer && clientId) {
       initGoogleLogin();
     }
   });
 
   function initGoogleLogin() {
+    if (!clientId) return;
     if (typeof (window as any).google === 'undefined') {
       setTimeout(initGoogleLogin, 500);
       return;
@@ -23,7 +26,7 @@
 
     try {
       (window as any).google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
+        client_id: clientId,
         callback: handleGoogleResponse,
         auto_select: false,
       });
