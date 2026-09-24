@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Page } from 'framework7-svelte';
   import { api } from '../stores/api';
   import { auth } from '../stores/auth.svelte';
   import type { Workspace } from '@flashlearn/shared';
@@ -43,6 +44,7 @@
   }
 </script>
 
+<Page name="superadmin">
 <div class="superadmin-panel" style="max-width: 960px; margin: 0 auto; padding: 24px 16px;">
   <!-- Header -->
   <div style="background: #ffffff; border: 1px solid #fee2e2; border-left: 6px solid #b91c1c; border-radius: 16px; padding: 24px; margin-bottom: 28px; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
@@ -144,3 +146,4 @@
     </div>
   {/if}
 </div>
+</Page>

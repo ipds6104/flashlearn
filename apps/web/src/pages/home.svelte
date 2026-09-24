@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Page } from 'framework7-svelte';
   import { api } from '../stores/api';
   import { auth } from '../stores/auth.svelte';
   import type { Workspace } from '@flashlearn/shared';
@@ -45,7 +46,8 @@
   }
 </script>
 
-<div class="home-page" style="max-width: 960px; margin: 0 auto; padding: 24px 16px;">
+<Page name="home">
+  <div class="home-page" style="max-width: 960px; margin: 0 auto; padding: 24px 16px;">
   <!-- Hero Section -->
   <div
     style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); border-radius: 24px; padding: 36px 28px; color: #ffffff; margin-bottom: 32px; box-shadow: 0 12px 30px -6px rgba(15, 118, 110, 0.3);"
@@ -167,3 +169,4 @@
     </div>
   {/if}
 </div>
+</Page>

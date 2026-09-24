@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Page } from 'framework7-svelte';
   import { api } from '../stores/api';
   import { auth } from '../stores/auth.svelte';
   import type { Workspace, Content, ContentType } from '@flashlearn/shared';
@@ -175,6 +176,7 @@
   }
 </script>
 
+<Page name="workspace">
 <div class="workspace-page" style="max-width: 900px; margin: 0 auto; padding: 20px 16px;">
   {#if isLoading}
     <div style="text-align: center; padding: 48px; color: #94a3b8;">
@@ -572,3 +574,4 @@
     </div>
   </div>
 {/if}
+</Page>

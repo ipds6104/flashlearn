@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Page } from 'framework7-svelte';
   import { api } from '../stores/api';
   import type { Content } from '@flashlearn/shared';
   import MaterialViewer from '../components/MaterialViewer.svelte';
@@ -46,6 +47,7 @@
   }
 </script>
 
+<Page name="content-detail">
 <div class="content-detail-page" style="min-height: 100vh; padding-bottom: 40px;">
   <!-- Sub-navbar Back Bar -->
   <div style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 16px;">
@@ -91,3 +93,4 @@
     {/if}
   {/if}
 </div>
+</Page>

@@ -11,9 +11,11 @@
     "dev:api": "bun --filter ./apps/api dev",
     "dev:web": "bun --filter ./apps/web dev",
     "build": "bun --filter \"*\" build",
-    "test": "bun test"
+    "test": "bun test",
+    "screenshot": "bun scripts/take-screenshot.ts"
   },
   "devDependencies": {
+    "puppeteer-core": "^25.12.0",
     "typescript": "^5.8.0"
   }
 }

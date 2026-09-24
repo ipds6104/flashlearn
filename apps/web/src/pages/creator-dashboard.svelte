@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Page } from 'framework7-svelte';
   import { api } from '../stores/api';
   import { auth } from '../stores/auth.svelte';
   import type { Workspace } from '@flashlearn/shared';
@@ -65,6 +66,7 @@
   }
 </script>
 
+<Page name="creator">
 <div class="creator-dashboard" style="max-width: 900px; margin: 0 auto; padding: 24px 16px;">
   <!-- Header -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
@@ -235,3 +237,4 @@
     </div>
   </div>
 {/if}
+</Page>
