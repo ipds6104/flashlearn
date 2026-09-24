@@ -18,6 +18,31 @@
       rel="stylesheet"
     />
 
+    <!-- Path to Hash Redirector for Shareable Links (/c/:id, /content/:id, /workspace/:id) -->
+    <script>
+      (function() {
+        var p = window.location.pathname;
+        var h = window.location.hash;
+        if (!h || h === '#/' || h === '') {
+          var cMatch = p.match(/^\/c\/([a-zA-Z0-9-]+)/);
+          if (cMatch) {
+            window.location.replace('/#/content/' + cMatch[1]);
+            return;
+          }
+          var contentMatch = p.match(/^\/content\/([a-zA-Z0-9-]+)/);
+          if (contentMatch) {
+            window.location.replace('/#/content/' + contentMatch[1]);
+            return;
+          }
+          var wsMatch = p.match(/^\/workspace\/([a-zA-Z0-9-]+)/);
+          if (wsMatch) {
+            window.location.replace('/#/workspace/' + wsMatch[1]);
+            return;
+          }
+        }
+      })();
+    </script>
+
     <!-- Google Identity Services (GIS) for Google OAuth -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>

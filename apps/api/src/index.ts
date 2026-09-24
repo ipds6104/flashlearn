@@ -65,6 +65,9 @@ const app = new Elysia()
   .use(workspaceController)
   .use(contentController)
   .use(apiKeyController)
+  .get('/c/:id', ({ params, redirect }) => redirect(`/#/content/${params.id}`, 302))
+  .get('/content/:id', ({ params, redirect }) => redirect(`/#/content/${params.id}`, 302))
+  .get('/workspace/:id', ({ params, redirect }) => redirect(`/#/workspace/${params.id}`, 302))
   .all('*', ({ path }) => {
     if (path.startsWith('/api') || path.startsWith('/docs') || path.startsWith('/health')) {
       return;

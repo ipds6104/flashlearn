@@ -115,7 +115,7 @@ You have programmatic access to the **FlashLearn Education Engine** to create an
 
 3. **Public Shareable Link for Learners:**
    Once created, return this link to the user to share with students/WhatsApp group:
-   \`${origin}/c/{content-id}\`
+   \`${origin}/c/{content-id}\` (or direct: \`${origin}/#/content/{content-id}\`)
 
 4. **Retrieve Quiz Analytics & Export Submissions:**
    - JSON Submissions: \`GET ${origin}/api/v1/contents/{content-id}/submissions\`

@@ -18,6 +18,10 @@ export const routes = [
     component: ContentDetailPage,
   },
   {
+    path: '/c/:id',
+    component: ContentDetailPage,
+  },
+  {
     path: '/creator',
     component: CreatorDashboardPage,
   },
