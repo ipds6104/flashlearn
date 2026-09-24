@@ -98,7 +98,7 @@
     </button>
   {:else}
     <!-- Guest Google Login Button -->
-    <div bind:this={googleButtonContainer} style="max-width: 180px; overflow: hidden;"></div>
+    <div bind:this={googleButtonContainer} style="display: flex; align-items: center;"></div>
   {/if}
 </div>
 

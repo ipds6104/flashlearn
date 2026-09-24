@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { App, View } from 'framework7-svelte';
+  import { App, View, f7 } from 'framework7-svelte';
   import { routes } from './routes';
   import { auth } from './stores/auth.svelte';
   import NavbarAuth from './components/NavbarAuth.svelte';
@@ -25,6 +25,16 @@
   function closeMobileMenu() {
     mobileMenuOpen = false;
   }
+
+  function navigateTo(url: string, e?: Event) {
+    if (e) e.preventDefault();
+    closeMobileMenu();
+    if (f7?.views?.main) {
+      f7.views.main.router.navigate(url);
+    } else {
+      window.location.hash = `#${url}`;
+    }
+  }
 </script>
 
 <App {...f7params}>
@@ -39,7 +49,7 @@
       <!-- Brand Title -->
       <a
         href="#/"
-        onclick={closeMobileMenu}
+        onclick={(e) => navigateTo('/', e)}
         style="text-decoration: none; display: flex; align-items: center; gap: 8px; flex-shrink: 0;"
       >
         <div
@@ -58,6 +68,7 @@
       <nav class="desktop-nav-links" style="display: flex; align-items: center; gap: 16px;">
         <a
           href="#/"
+          onclick={(e) => navigateTo('/', e)}
           style="color: #334155; text-decoration: none; font-weight: 600; font-size: 0.9rem;"
         >
           Eksplorasi
@@ -66,6 +77,7 @@
         {#if auth.isCreator}
           <a
             href="#/creator"
+            onclick={(e) => navigateTo('/creator', e)}
             style="color: #0f766e; text-decoration: none; font-weight: 700; font-size: 0.9rem;"
           >
             Studio Kreator
@@ -75,6 +87,7 @@
         {#if auth.isSuperadmin}
           <a
             href="#/admin"
+            onclick={(e) => navigateTo('/admin', e)}
             style="color: #b91c1c; text-decoration: none; font-weight: 700; font-size: 0.9rem;"
           >
             🛡️ Superadmin
@@ -155,7 +168,7 @@
         <div style="display: flex; flex-direction: column; gap: 6px;">
           <a
             href="#/"
-            onclick={closeMobileMenu}
+            onclick={(e) => navigateTo('/', e)}
             style="padding: 10px 14px; border-radius: 10px; text-decoration: none; color: #1e293b; font-weight: 600; font-size: 0.95rem; background: #f8fafc; display: flex; align-items: center; gap: 10px;"
           >
             <span>🧭</span> Eksplorasi Materi & Kuis
@@ -164,7 +177,7 @@
           {#if auth.isCreator}
             <a
               href="#/creator"
-              onclick={closeMobileMenu}
+              onclick={(e) => navigateTo('/creator', e)}
               style="padding: 10px 14px; border-radius: 10px; text-decoration: none; color: #0f766e; font-weight: 700; font-size: 0.95rem; background: #f0fdfa; border: 1px solid #ccfbf1; display: flex; align-items: center; gap: 10px;"
             >
               <span>🛠️</span> Studio Kreator
@@ -174,7 +187,7 @@
           {#if auth.isSuperadmin}
             <a
               href="#/admin"
-              onclick={closeMobileMenu}
+              onclick={(e) => navigateTo('/admin', e)}
               style="padding: 10px 14px; border-radius: 10px; text-decoration: none; color: #b91c1c; font-weight: 700; font-size: 0.95rem; background: #fef2f2; border: 1px solid #fecaca; display: flex; align-items: center; gap: 10px;"
             >
               <span>🛡️</span> Superadmin Control Panel
