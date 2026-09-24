@@ -51,3 +51,16 @@ export const apiKeys = pgTable('api_keys', {
   lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const quizSubmissions = pgTable('quiz_submissions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  contentId: uuid('content_id').references(() => contents.id, { onDelete: 'cascade' }).notNull(),
+  guestName: text('guest_name'),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+  score: integer('score').notNull(),
+  totalQuestions: integer('total_questions').notNull(),
+  percentage: integer('percentage').notNull(),
+  answers: jsonb('answers'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+

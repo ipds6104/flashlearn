@@ -6,7 +6,11 @@ import { workspaceController } from './infrastructure/http/controllers/workspace
 import { contentController } from './infrastructure/http/controllers/content.controller';
 import { apiKeyController } from './infrastructure/http/controllers/apikey.controller';
 
+import { join } from 'node:path';
+import { existsSync, statSync } from 'node:fs';
+
 const port = Number(process.env.PORT) || 3001;
+const publicDir = process.env.PUBLIC_DIR || join(import.meta.dir, '../../web/dist');
 
 const app = new Elysia()
   .use(
@@ -61,6 +65,20 @@ const app = new Elysia()
   .use(workspaceController)
   .use(contentController)
   .use(apiKeyController)
+  .all('*', ({ path }) => {
+    if (path.startsWith('/api') || path.startsWith('/docs') || path.startsWith('/health')) {
+      return;
+    }
+    if (existsSync(publicDir)) {
+      const cleanPath = path.replace(/^\//, '');
+      const candidate = join(publicDir, cleanPath);
+      if (cleanPath && existsSync(candidate) && !statSync(candidate).isDirectory()) {
+        return Bun.file(candidate);
+      }
+      return Bun.file(join(publicDir, 'index.html'));
+    }
+    return { message: '⚡ FlashLearn API Engine is operational. Web build not mounted.' };
+  })
   .listen(port);
 
 console.log(`⚡ FlashLearn API is running at http://localhost:${port}`);

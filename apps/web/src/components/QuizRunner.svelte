@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Content, QuizResultResponse, FlashcardItem } from '@flashlearn/shared';
   import { api } from '../stores/api';
+  import { auth } from '../stores/auth.svelte';
   import FlashcardDeck from './FlashcardDeck.svelte';
 
   interface Props {
@@ -18,6 +19,47 @@
   let flashcardItems = $state<FlashcardItem[]>([]);
   let isLoadingFlashcards = $state(false);
 
+  // Guest Onboarding & Name Disambiguation
+  let guestName = $state(
+    auth.user?.name || localStorage.getItem('flashlearn_guest_name') || ''
+  );
+  let hasStartedQuiz = $state(auth.isLoggedIn);
+  let isCheckingName = $state(false);
+  let nameFeedback = $state<{ isTaken: boolean; suggestedName: string } | null>(null);
+
+  async function handleNameCheck() {
+    if (!guestName.trim() || auth.isLoggedIn) {
+      nameFeedback = null;
+      return;
+    }
+
+    isCheckingName = true;
+    try {
+      const res = await api.contents.checkGuestName(content.id, guestName.trim());
+      nameFeedback = res.isTaken ? res : null;
+    } catch {
+      nameFeedback = null;
+    } finally {
+      isCheckingName = false;
+    }
+  }
+
+  function applySuggestedName() {
+    if (nameFeedback?.suggestedName) {
+      guestName = nameFeedback.suggestedName;
+      nameFeedback = null;
+    }
+  }
+
+  function startQuiz(anonymous = false) {
+    if (anonymous) {
+      guestName = 'Anonim';
+    } else if (guestName.trim()) {
+      localStorage.setItem('flashlearn_guest_name', guestName.trim());
+    }
+    hasStartedQuiz = true;
+  }
+
   function selectOption(questionId: string, optionId: string) {
     if (quizResult) return; // Locked after submission
     userAnswers[questionId] = optionId;
@@ -27,6 +69,7 @@
     isSubmitting = true;
     try {
       const payload = {
+        guestName: guestName.trim() || 'Anonim',
         answers: Object.entries(userAnswers).map(([questionId, selectedOptionId]) => ({
           questionId,
           selectedOptionId,
@@ -60,6 +103,9 @@
     userAnswers = {};
     quizResult = null;
     showFlashcards = false;
+    if (!auth.isLoggedIn) {
+      hasStartedQuiz = false;
+    }
   }
 </script>
 
@@ -79,15 +125,112 @@
       title={`Flashcard: ${content.title}`}
       onClose={() => (showFlashcards = false)}
     />
+  {:else if !hasStartedQuiz}
+    <!-- Guest Quiz Briefing & Name Entry (Progressive Disclosure) -->
+    <div
+      style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 36px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); text-align: center; max-width: 540px; margin: 20px auto;"
+    >
+      <div style="font-size: 3rem; margin-bottom: 12px;">🎯</div>
+      <div style="display: inline-block; background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.8rem; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; margin-bottom: 12px;">
+        Asesmen Kuis Interaktif
+      </div>
+      <h1 style="font-size: 1.6rem; color: #0f172a; margin: 0 0 10px 0; font-weight: 800; line-height: 1.3;">
+        {content.title}
+      </h1>
+      {#if content.summary}
+        <p style="color: #64748b; font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5;">
+          {content.summary}
+        </p>
+      {/if}
+
+      <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 28px;">
+        <div style="background: #f8fafc; padding: 10px 18px; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <div style="font-size: 1.25rem; font-weight: 800; color: #0f766e;">{questions.length}</div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Jumlah Soal</div>
+        </div>
+        <div style="background: #f8fafc; padding: 10px 18px; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <div style="font-size: 1.25rem; font-weight: 800; color: #ea580c;">~{content.readingTimeMinutes || 5} m</div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Durasi Waktu</div>
+        </div>
+      </div>
+
+      <!-- Single-field Name Input with Validation & Auto-disambiguation -->
+      <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+        <label for="participant-name" style="display: block; font-weight: 700; font-size: 0.9rem; color: #1e293b; margin-bottom: 6px;">
+          Nama / Panggilanmu:
+        </label>
+        <div style="position: relative;">
+          <input
+            id="participant-name"
+            type="text"
+            placeholder="Masukkan nama untuk hasil kuis..."
+            bind:value={guestName}
+            onblur={handleNameCheck}
+            oninput={() => (nameFeedback = null)}
+            style="width: 100%; padding: 12px 16px; border: 2px solid {nameFeedback ? '#f59e0b' : '#cbd5e1'}; border-radius: 10px; font-size: 1rem; color: #0f172a; box-sizing: border-box;"
+          />
+          {#if isCheckingName}
+            <span style="position: absolute; right: 12px; top: 14px; font-size: 0.8rem; color: #94a3b8;">
+              Memeriksa...
+            </span>
+          {/if}
+        </div>
+
+        <!-- Disambiguation Suggestion if duplicate name is found -->
+        {#if nameFeedback?.isTaken}
+          <div
+            style="margin-top: 10px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 12px; font-size: 0.85rem; color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 8px;"
+          >
+            <div>
+              ⚠️ Nama <strong>"{guestName}"</strong> sudah ada di kuis ini.
+            </div>
+            <button
+              onclick={applySuggestedName}
+              style="background: #f59e0b; color: #ffffff; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap;"
+            >
+              Gunakan {nameFeedback.suggestedName}
+            </button>
+          </div>
+        {/if}
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 6px;">
+          Nama akan ditampilkan pada lembar skor dan rekap evaluasi kuis.
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button
+          onclick={() => startQuiz(false)}
+          style="background: #0f766e; color: #ffffff; border: none; padding: 14px 24px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.3);"
+        >
+          Mulai Mengerjakan Kuis 🚀
+        </button>
+
+        <button
+          onclick={() => startQuiz(true)}
+          style="background: none; border: none; color: #64748b; font-size: 0.85rem; font-weight: 600; cursor: pointer; padding: 6px;"
+        >
+          Lewati & Kerjakan sebagai Anonim
+        </button>
+      </div>
+    </div>
   {:else}
-    <!-- Quiz Questions View -->
+    <!-- Active Quiz Runner -->
     <div style="margin-bottom: 24px;">
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-        <span class="badge-quiz">📝 Kuis Interaktif</span>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="badge-quiz">📝 Kuis Interaktif</span>
+          {#if guestName}
+            <span style="font-size: 0.85rem; font-weight: 600; color: #0f766e;">
+              👤 {guestName}
+            </span>
+          {/if}
+        </div>
         {#if content.readingTimeMinutes}
           <span style="font-size: 0.8rem; color: #64748b;">⏱️ ~{content.readingTimeMinutes} Menit</span>
         {/if}
       </div>
+
       <h1 style="font-size: 1.6rem; color: #0f172a; margin: 0 0 8px 0; font-weight: 800;">
         {content.title}
       </h1>
@@ -99,24 +242,29 @@
     <!-- Quiz Results Banner when finished -->
     {#if quizResult}
       <div
-        style="background: {quizResult.passed ? '#f0fdf4' : '#fff7ed'}; border: 2px solid {quizResult.passed ? '#86efac' : '#fdba74'}; border-radius: 16px; padding: 24px; margin-bottom: 28px; text-align: center;"
+        style="background: {quizResult.passed ? '#f0fdf4' : '#fff7ed'}; border: 2px solid {quizResult.passed ? '#86efac' : '#fdba74'}; border-radius: 20px; padding: 28px 24px; margin-bottom: 28px; text-align: center;"
       >
-        <div style="font-size: 2.5rem; margin-bottom: 8px;">
+        <div style="font-size: 2.8rem; margin-bottom: 8px;">
           {quizResult.passed ? '🏆' : '📚'}
         </div>
-        <h2 style="margin: 0 0 6px 0; font-size: 1.4rem; color: #0f172a;">
-          Skor Kamu: <span style="color: {quizResult.passed ? '#15803d' : '#c2410c'}; font-weight: 800;">{quizResult.percentage}%</span>
+        {#if quizResult.guestName}
+          <div style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
+            Hasil Kuis: {quizResult.guestName}
+          </div>
+        {/if}
+        <h2 style="margin: 0 0 6px 0; font-size: 1.5rem; color: #0f172a;">
+          Skor Akhir: <span style="color: {quizResult.passed ? '#15803d' : '#c2410c'}; font-weight: 800;">{quizResult.percentage}%</span>
         </h2>
         <p style="color: #475569; margin: 0 0 20px 0; font-size: 0.95rem;">
           Berhasil menjawab benar <strong>{quizResult.correctAnswers}</strong> dari <strong>{quizResult.totalQuestions}</strong> soal.
         </p>
 
         <!-- The Prominent Post-Quiz Flashcard Button -->
-        <div style="display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto;">
+        <div style="display: flex; flex-direction: column; gap: 10px; max-width: 420px; margin: 0 auto;">
           <button
             onclick={openFlashcards}
             disabled={isLoadingFlashcards}
-            style="background: #ea580c; color: #ffffff; border: none; padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);"
+            style="background: #ea580c; color: #ffffff; border: none; padding: 15px 24px; border-radius: 14px; font-weight: 800; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 18px rgba(234, 88, 12, 0.35);"
           >
             ⚡ {isLoadingFlashcards ? 'Menyiapkan...' : 'Buka Soal dalam Bentuk Flashcard'}
           </button>
@@ -136,15 +284,15 @@
       {#each questions as q, qIndex}
         {@const review = quizResult?.reviews?.find((r) => r.questionId === q.id)}
         <div
-          style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);"
+          style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 18px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);"
         >
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <span style="font-weight: 700; font-size: 0.85rem; color: #0f766e; text-transform: uppercase;">
-              Pertanyaan {qIndex + 1}
+            <span style="font-weight: 800; font-size: 0.85rem; color: #0f766e; text-transform: uppercase;">
+              Soal {qIndex + 1} dari {questions.length}
             </span>
             {#if review}
               <span
-                style="font-size: 0.8rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: {review.isCorrect ? '#dcfce7' : '#fee2e2'}; color: {review.isCorrect ? '#15803d' : '#b91c1c'};"
+                style="font-size: 0.8rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: {review.isCorrect ? '#dcfce7' : '#fee2e2'}; color: {review.isCorrect ? '#15803d' : '#b91c1c'};"
               >
                 {review.isCorrect ? '✓ Benar' : '✗ Belum Tepat'}
               </span>

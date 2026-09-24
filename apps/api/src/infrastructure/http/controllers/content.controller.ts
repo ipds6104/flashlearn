@@ -197,6 +197,25 @@ export const contentController = new Elysia({ prefix: '/api/v1/contents' })
     }
   )
   .post(
+    '/:id/check-name',
+    async ({ params, body }) => {
+      return await container.checkGuestNameUseCase.execute(params.id, body.name);
+    },
+    {
+      params: t.Object({
+        id: t.String({ description: 'Content UUID' }),
+      }),
+      body: t.Object({
+        name: t.String({ description: 'Candidate guest name' }),
+      }),
+      detail: {
+        tags: ['Quiz & Flashcards'],
+        summary: 'Check Guest Name Disambiguation',
+        description: 'Checks if guest name is already taken in this quiz and suggests a disambiguated suffix.',
+      },
+    }
+  )
+  .post(
     '/:id/submit-quiz',
     async ({ params, body, set }) => {
       try {
@@ -212,6 +231,7 @@ export const contentController = new Elysia({ prefix: '/api/v1/contents' })
         id: t.String({ description: 'Content UUID with quiz' }),
       }),
       body: t.Object({
+        guestName: t.Optional(t.String({ description: 'Participant name' })),
         answers: t.Array(
           t.Object({
             questionId: t.String(),

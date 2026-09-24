@@ -40,15 +40,20 @@ flowchart TD
 - No login wall or modal blockage. The user can immediately view public workspaces, search topics, or filter by content type (`Materi`, `Quiz`, `Materi + Quiz`).
 
 ### 2. Consuming Content Modes
-- **Mode 1: Materi Saja (`/content/:id/read`)**
+- **Mode 1: Materi Saja (`/c/:id` with type `materi`)**
+  - **Zero-Friction Access**: Reader is NOT asked for a name upfront to prevent bounce rates.
   - Clean, distraction-free reading typography (Plus Jakarta Sans headlines, Inter body).
   - Estimated reading time and key concepts outline.
-- **Mode 2: Quiz Saja (`/content/:id/quiz`)**
-  - Interactive quiz runner with smooth question transitions.
-  - Option to see instant rationale or wait until full completion.
-- **Mode 3: Materi & Quiz Digabung (`/content/:id/module`)**
-  - Section 1 displays the educational theory and reading module.
-  - Section 2 unlocks the integrated checkpoint quiz to test the user right after reading.
+- **Mode 2: Quiz Saja (`/c/:id` with type `quiz`)**
+  - **Pre-Quiz Briefing & Name Step**:
+    - Displays total questions, time estimate, and topic summary.
+    - Prompts guest for their display name to personalize results and leaderboard.
+    - **Realtime Duplicate Check**: System checks if the name already took this quiz. If found, it politely offers a 1-click suggestion (e.g. *"Budi (2)"*) without blocking the user. An escape hatch (*"Kerjakan Anonim"*) is also provided.
+    - Name is saved to `localStorage` for automatic reuse in future quizzes.
+  - Interactive quiz runner with smooth question transitions and progress bar.
+- **Mode 3: Materi & Quiz Digabung (`/c/:id` with type `combined`)**
+  - **Progressive Disclosure**: User reads the material immediately without any name prompt.
+  - When the user finishes reading and taps **"Mulai Evaluasi Quiz"**, the name briefing modal is presented at the moment of highest engagement.
 
 ### 3. Post-Quiz Flashcard Engine
 - Upon submitting any quiz, the results screen displays:

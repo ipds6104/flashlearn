@@ -64,6 +64,7 @@ export interface QuizAnswerSubmission {
 }
 
 export interface QuizSubmissionRequest {
+  guestName?: string;
   answers: QuizAnswerSubmission[];
 }
 
@@ -77,6 +78,7 @@ export interface QuestionReviewItem {
 }
 
 export interface QuizResultResponse {
+  guestName?: string;
   score: number;
   totalQuestions: number;
   correctAnswers: number;

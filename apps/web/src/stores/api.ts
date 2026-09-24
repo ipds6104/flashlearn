@@ -14,7 +14,7 @@ import type {
   CreateApiKeyRequest,
 } from '@flashlearn/shared';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.port !== '5173' ? '' : 'http://localhost:3001');
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const headers = new Headers(options.headers || {});
@@ -61,6 +61,11 @@ export const api = {
       fetchWithAuth(`/api/v1/contents/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string): Promise<{ success: boolean }> =>
       fetchWithAuth(`/api/v1/contents/${id}`, { method: 'DELETE' }),
+    checkGuestName: (id: string, name: string): Promise<{ isTaken: boolean; suggestedName: string }> =>
+      fetchWithAuth(`/api/v1/contents/${id}/check-name`, {
+        method: 'POST',
+        body: JSON.stringify({ name }),
+      }),
     submitQuiz: (id: string, submission: QuizSubmissionRequest): Promise<QuizResultResponse> =>
       fetchWithAuth(`/api/v1/contents/${id}/submit-quiz`, {
         method: 'POST',

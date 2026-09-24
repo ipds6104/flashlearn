@@ -50,7 +50,23 @@ export class SubmitQuizUseCase {
     const totalQuestions = content.questions.length;
     const percentage = Math.round((correctCount / totalQuestions) * 100);
 
+    // Persist submission for leaderboard / creator insights
+    import('../../../infrastructure/database/db').then(async ({ db }) => {
+      const { quizSubmissions } = await import('../../../infrastructure/database/schema');
+      db.insert(quizSubmissions)
+        .values({
+          contentId,
+          guestName: submission.guestName || 'Anonim',
+          score: correctCount,
+          totalQuestions,
+          percentage,
+          answers: submission.answers,
+        })
+        .catch(() => {});
+    });
+
     return {
+      guestName: submission.guestName,
       score: correctCount,
       totalQuestions,
       correctAnswers: correctCount,

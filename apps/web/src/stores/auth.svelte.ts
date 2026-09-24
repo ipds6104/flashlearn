@@ -1,6 +1,6 @@
 import type { User, UserRole } from '@flashlearn/shared';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.port !== '5173' ? '' : 'http://localhost:3001');
 
 class AuthState {
   token = $state<string | null>(localStorage.getItem('flashlearn_token'));

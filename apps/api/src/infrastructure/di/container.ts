@@ -22,6 +22,7 @@ import { UpdateContentUseCase } from '../../application/use-cases/content/Update
 import { DeleteContentUseCase } from '../../application/use-cases/content/DeleteContentUseCase';
 import { SubmitQuizUseCase } from '../../application/use-cases/content/SubmitQuizUseCase';
 import { GenerateFlashcardsUseCase } from '../../application/use-cases/content/GenerateFlashcardsUseCase';
+import { CheckGuestNameUseCase } from '../../application/use-cases/content/CheckGuestNameUseCase';
 
 import { CreateApiKeyUseCase } from '../../application/use-cases/apikey/CreateApiKeyUseCase';
 import { ListApiKeysUseCase } from '../../application/use-cases/apikey/ListApiKeysUseCase';
@@ -76,6 +77,7 @@ export class Container {
   );
   public readonly submitQuizUseCase = new SubmitQuizUseCase(this.contentRepository);
   public readonly generateFlashcardsUseCase = new GenerateFlashcardsUseCase(this.contentRepository);
+  public readonly checkGuestNameUseCase = new CheckGuestNameUseCase();
 
   public readonly createApiKeyUseCase = new CreateApiKeyUseCase(this.apiKeyRepository);
   public readonly listApiKeysUseCase = new ListApiKeysUseCase(this.apiKeyRepository);
