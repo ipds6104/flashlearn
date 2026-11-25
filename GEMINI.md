@@ -1,15 +1,20 @@
 # FlashLearn Developer Rules & Architecture Guide
 
-Welcome to **FlashLearn**, an active-recall learning application built with Bun, TypeScript, Elysia.js, PostgreSQL (Drizzle ORM), Svelte 5, and Framework7 v9.1.3.
+Welcome to **FlashLearn**, an active-comprehension, active-recall, and authentic-practice learning platform built with Bun, TypeScript, Elysia.js, PostgreSQL (Drizzle ORM), Svelte 5, and Framework7 v9.1.3.
+
+> **Primary Mission (3-Stage Learning Loop)**: **Paham Konsep (`interactive_module`) $\rightarrow$ Tajam Ingatan (`quiz` + Flashcard 3D) $\rightarrow$ Terbukti Berkarya (`project_mission`)** — eliminating *Tutorial Hell* and *Imposter Syndrome* through authentic real-world deliverables.
 
 ## 🚀 Quick Reference Commands
 - **Install dependencies**: `bun install`
-- **Run dev environment (all apps)**: `bun run dev`
-- **Run backend API only**: `cd apps/api && bun run dev` (Runs on `http://localhost:3000`)
-- **Run frontend Web only**: `cd apps/web && bun run dev` (Runs on `http://localhost:5173`)
+- **Full local dev setup (Docker Postgres + migrate + seed + hot-reload)**: `bun run dev:up`
+- **Run dev environment (all apps, hot-reload)**: `bun run dev` (`API :3001`, `Web :5173` or auto-fallback `:5174` with same-origin Vite proxy)
+- **Database dev container**: `bun run dev:db` / `bun run dev:db:down` (`compose.dev.yml`)
 - **Database migrations**: `cd apps/api && bun run db:generate` (generate SQL) & `bun run db:migrate` (safe migration runner)
-- **API Documentation**: `http://localhost:3000/docs` (Scalar UI) or `http://localhost:3000/swagger`
+- **API Documentation**: `http://localhost:3001/docs` (Scalar UI)
 - **Agent-First CLI**: `bun run cli <noun> <action>` (See [docs/agent-first-cli.md](docs/agent-first-cli.md))
+- **Deterministic Workspace Completeness Audit**: `bun run cli workspace audit <id-or-slug> --strict` *(directs remediation via `.agents/skills/flashlearn-curriculum-pipeline/SKILL.md`)*
+- **Import Standalone Project Mission**: `bun run cli content import-project --workspace-id <id-or-slug> --manifest <project.json> [--dry-run]`
+- **Primary Authoring Skill**: `.agents/skills/flashlearn-curriculum-pipeline/SKILL.md` (v3.2 — interactive modules, 10–600+ quiz drills, & `project_mission` capstone/mini-practice)
 - **Run arc42 Architecture Linter**: `bun run lint:arc42` or `bun run lint:arc42:strict`
 - **arc42 Architecture Documentation**: See [docs/architecture/01_introduction_and_goals.md](docs/architecture/01_introduction_and_goals.md)
 - **Run SRP & File Length Linter**: `bun run lint:srp`

@@ -5,7 +5,9 @@ description: Autonomous domain curriculum research & completeness auditor for Fl
 
 # 🧠 FlashLearn Domain Curriculum & Completeness Auditor (`flashlearn-domain-auditor`)
 
-Skill ini digunakan oleh Coding Agent untuk melakukan audit komprehensif terhadap sebuah **Domain / Workspace** yang telah dibuat di FlashLearn. Skill ini menggabungkan **inspeksi deterministik struktur domain** dengan **riset web real-time (internet search)** untuk memastikan kurikulum domain tersebut:
+> [!IMPORTANT] **Routing Audit Workspace Utama**: Untuk mengaudit kelengkapan workspace pembelajaran FlashLearn (modul interaktif, active recall, dan misi praktek karya nyata `project_mission`), jalankan CLI deterministik **`flashlearn workspace audit <workspace-id-atau-slug> --strict`** dan lakukan perbaikan menggunakan skill utama **[flashlearn-curriculum-pipeline](../flashlearn-curriculum-pipeline/SKILL.md)**. Skill `flashlearn-domain-auditor` ini digunakan khusus untuk audit blueprint JSON backend internal (`docs/samples/*-blueprint.json`) pada domain kepatuhan/dokumen in-scope (bukan lisensi keselamatan fisik seperti bedah medis atau aviasi).
+
+Skill ini digunakan oleh Coding Agent untuk melakukan audit komprehensif terhadap sebuah **Domain Blueprint** internal di FlashLearn. Skill ini menggabungkan **inspeksi deterministik struktur domain** dengan **riset web real-time (internet search)** untuk memastikan kurikulum domain tersebut:
 1. **Proper & Complete**: Memenuhi standar industri terkini, regulasi hukum aktif (standar tahun 2026), sertifikasi relevan (ISO, NIST, dll.), dan studi kasus nyata.
 2. **Sesuai Tujuan Utama FlashLearn**: Bukan sekadar kuis trivia hafalan biasa, melainkan *evidence-based competency authorization engine* dengan 5 pilar invarian.
 

@@ -9,7 +9,10 @@ Skill ini digunakan oleh Coding Agent untuk **membangun (mensintesis) domain kur
 
 Seluruh kurikulum yang dibangun wajib mengimplementasikan temuan meta-analisis dan arsitektur kognitif FlashLearn v2.0 (*Bastani et al., 2025; Anderson, 1982; Borders et al., 2024; Mazzone et al., 2020*).
 
-> **Ingin membangun materi interaktif dari PDF dengan Bridging Analogies (Clement & Brown), Anchoring Micro-Lab, dan Slide Deck Guizang eksternal?** Gunakan skill pendamping [flashlearn-curriculum-pipeline](../flashlearn-curriculum-pipeline/SKILL.md) yang memetakan alur 4-layer lengkap hingga `flashlearn content import-interactive` dan `flashlearn domain import-curriculum`.
+> [!IMPORTANT] **Routing Utama & Batas Ruang Lingkup (November 2026)**
+> - **Untuk seluruh pembuatan & pemeliharaan Workspace Pembelajaran / Buku / Kursus / Praktek Mandiri (`interactive_module`, `quiz`, `project_mission`)**: **WAJIB gunakan skill utama [flashlearn-curriculum-pipeline](../flashlearn-curriculum-pipeline/SKILL.md)** dan verifikasi kelengkapannya via `flashlearn workspace audit <slug> --strict`.
+> - Skill `flashlearn-domain-builder` ini khusus untuk **backend-only internal operational blueprint ingestion** (SOP/regulasi berbasis dokumen/keputusan digital seperti PBJ, audit internal, atau pedoman sensus) — UI *Peta Kompetensi / Paspor Gerbang* saat ini telah disederhanakan dari tampilan utama.
+> - **Out-of-Scope Keras**: Dilarang menggunakan FlashLearn untuk mengklaim penerbitan izin/otorisasi profesi keselamatan jiwa fisik atau berlisensi negara (*ahli bedah/medis klinis, pilot/perawatan pesawat, operator keselamatan fisik kritis*). Untuk topik tersebut, gunakan hanya mode edukasi/teori di `flashlearn-curriculum-pipeline`.
 
 ---
 

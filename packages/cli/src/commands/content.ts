@@ -9,6 +9,7 @@ import {
   importInteractiveModule,
   prepareValidatedHtmlArtifact,
 } from '../core/interactive-importer';
+import { importStandaloneProjectMission } from '../core/project-importer';
 
 export async function handleContentCommand(
   action: string,
@@ -237,6 +238,29 @@ export async function handleContentCommand(
         },
       });
       return { data };
+    }
+
+    case 'import-project': {
+      const workspaceRef = flags['workspace-id'] || flags.workspace;
+      const manifestPath = flags.manifest || flags.file || args[0];
+      if (!workspaceRef || !manifestPath) {
+        throw new CliError({
+          code: 'MISSING_ARGUMENT',
+          message:
+            'Required: --workspace-id <uuid-or-slug> and --manifest <project-mission.json>. Optional: --title "<title>" --slug "<slug>" --domain-id <id> --dry-run',
+          exitCode: ExitCode.VALIDATION_ERROR,
+        });
+      }
+      return await importStandaloneProjectMission(client, {
+        workspaceRef,
+        manifestPath,
+        title: flags.title,
+        slug: flags.slug,
+        summary: flags.summary,
+        domainId: flags['domain-id'],
+        readingTime: flags['reading-time'] ? Number(flags['reading-time']) : undefined,
+        dryRun: Boolean(flags['dry-run']),
+      });
     }
 
     case 'upload-artifact': {

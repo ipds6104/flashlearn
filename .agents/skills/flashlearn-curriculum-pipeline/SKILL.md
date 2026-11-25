@@ -1,9 +1,9 @@
 ---
 name: flashlearn-curriculum-pipeline
-description: Self-contained elastic 4-layer CLI curriculum compiler for FlashLearn (2-minute simple topics to 1,000+ page multi-book PDF/EPUB/PPTX courses). Implements Two-Phase Long-Running Agent Harness (Initializer + 1-chapter-at-a-time Incremental Worker), granular chapter-ledger.json task tracking, Extract-then-Author against Lost-in-the-Middle, Key Point Recall (>=85%) & Faithfulness Ratchet auditing, 15 curated pedagogies (CC BY-SA 4.0), Clement & Brown Bridging Analogies, cross-PC remote CRUD (`push/diff/prune/pull`), external visual HTML decks (e.g. guizang-ppt-skill AGPL-3.0), and native persistent asset uploads.
+description: Primary self-contained elastic 4-layer CLI curriculum compiler for FlashLearn (2-minute simple topics to 1,000+ page multi-book PDF/EPUB/PPTX courses). Covers the full 3-stage learning loop (Comprehension via UILA v2 interactive modules -> Active Recall via 10-600+ Quiz & 3D Flashcards -> Authentic Practice via independent project_mission mini_practice & capstone studios), Two-Phase Long-Running Agent Harness, chapter-ledger.json Key Point Recall (>=85%), deterministic workspace completeness auditing (`flashlearn workspace audit --strict`), cross-PC remote CRUD (`push/diff/prune/pull/import-project`), external visual HTML decks (AGPL-isolated), and native persistent asset uploads.
 ---
 
-# FlashLearn Adaptive Elastic Curriculum Pipeline v3 (`flashlearn-curriculum-pipeline`)
+# FlashLearn Adaptive Elastic Curriculum Pipeline v3.2 (`flashlearn-curriculum-pipeline`)
 
 Gunakan skill ini untuk menyusun, memperbarui, maupun mengelola materi pembelajaran di FlashLearn — mulai dari **topik sederhana 2–3 menit** hingga **kompilasi ebook teknis 300–1.000+ halaman (PDF / EPUB / PPTX)** — secara **100% lintas PC melalui HTTP CLI** (`flashlearn`) tanpa akses database lokal maupun Tailscale.
 
@@ -30,6 +30,10 @@ Gunakan skill ini untuk menyusun, memperbarui, maupun mengelola materi pembelaja
    - **FlashLearn Core, UILA v2, CLI PDF (`unpdf`) & EPUB/PPTX (`fflate`)**: MIT (lintas OS Windows/macOS/Linux/Termux, nol Poppler wajib, nol AGPL).
    - **15 Prinsip Pedagogi Terkurasi** *(diadaptasi dari `GarethManning/education-agent-skills`, CC BY-SA 4.0)*: dirangkum mandiri di Layer 2 dengan atribusi eksplisit.
    - **Visual Slide Deck Eksternal** *(mis. `guizang-ppt-skill`, GNU AGPL-3.0)*: wajib dijalankan di luar repositori FlashLearn saat authoring; output HTML diunggah sebagai data (`content_artifacts`) dan diputar terisolasi dalam `<iframe sandbox="allow-scripts">`. **Dilarang menyalin kode AGPL ke dalam repo FlashLearn.**
+6. **Invarian Anti-*Tutorial Hell* & Wajib Bukti Karya Nyata (*Authentic Deliverable*)**:
+   - Tujuan utama FlashLearn adalah membawa pembelajar melewati 3 tahap utuh: **Paham Konsep (`interactive_module`) $\rightarrow$ Tajam Ingatan (`quiz` & Flashcard 3D) $\rightarrow$ Terbukti Berkarya (`project_mission`)**.
+   - Setiap workspace dengan **>= 5 modul** (**WAJIB**) dan **>= 3 modul** (*sangat disarankan*) **harus** menyertakan minimal 1 modul `contentType: "project_mission"` (`capstone`, ditambah `mini_practice` per unit inti untuk workspace >= 8 modul).
+   - **Dilarang** membuat misi karya berupa esai hafalan pasif (*"Jelaskan pengertian X"*). Deliverable wajib berupa **artefak nyata sesuai bidang** (aplikasi/repo, dokumen ADR, lembar analisis keuangan, dataset/notebook, dsb.) yang lolos `flashlearn workspace audit <slug> --strict`.
 
 ---
 
@@ -164,12 +168,36 @@ Segera setelah `plan init`, buat file `./work/nama-kursus/chapter-ledger.json` y
 - **Push CLI**: Jalankan `flashlearn plan push --dir ... --module <slug>` seperti biasa (`quiz-drill-pusher.ts` otomatis mendeteksi `contentType: "quiz"` / `quiz-drill-v1`).
 
 ### F. Misi Praktek Mandiri & Proyek Karya Nyata (`contentType: "project_mission"`, Anti-*Tutorial Hell*)
-- **Tujuan**: Mencegah *imposter syndrome* dan *tutorial hell* dengan memastikan pembelajar tidak berhenti di bacaan/kuis saja, melainkan menghasilkan **Authentic Deliverable** di dunia nyata sesuai bidang workspace (*mis. membangun web app untuk materi pemrograman web, menulis ADR & diagram trade-off untuk arsitektur software, atau menyusun lembar alokasi kas untuk keuangan bisnis*).
-- **Tangga *Scaffolded Fade* (Rekomendasi per Skala Workspace)**:
-  - **Skala S (`micro_know`)**: Opsional — tidak wajib memaksakan proyek besar untuk topik singkat 3–5 menit.
-  - **Skala M & L (Kursus / Buku Teknis / Keterampilan Praktis)**:
-    1. **Mini-Praktek Unit (`missionLevel: "mini_practice"`, 15–45 mnt)**: Sisipkan di akhir unit inti (dengan `starterContext` setengah terbuka agar transisi mulus tanpa *blank-canvas shock*).
-    2. **Proyek Karya Akhir (`missionLevel: "capstone"`, 60–240 mnt)**: 1 studi kasus menyeluruh di akhir workspace tanpa panduan *step-by-step* kode, lengkap dengan *constraints*, *edgeCasesToTest*, dan *Single-Point Self-Audit Rubric*.
+- **Tujuan**: Mencegah *imposter syndrome* dan *tutorial hell* dengan memastikan pembelajar tidak berhenti di bacaan/kuis saja, melainkan menghasilkan **Authentic Deliverable** di dunia nyata sesuai bidang workspace.
+- **Matriks Wujud Karya Nyata per Bidang (Dilarang Esai Teori Pasif!)**:
+  | Bidang Workspace | Contoh Authentic Deliverable (`authenticDeliverable`) |
+  | :--- | :--- |
+  | **Pemrograman Web / Software** | Aplikasi web/API/CLI berjalan lokal atau live (repo GitHub/demo) dengan validasi edge case & responsif |
+  | **Arsitektur Software / Sistem** | Dokumen ADR (*Architecture Decision Record*) + diagram komponen & analisis trade-off untuk kasus sistem nyata |
+  | **Bisnis / Keuangan / Strategi** | Lembar alokasi kas, analisis *unit economics*, atau rencana *Beachhead Market* berbasis data nyata/mentah |
+  | **Data / Quant / Analitik** | Notebook/script analisis, model simulasi, atau evaluasi dataset mentah lengkap dengan asumsi & uji sensitivitas |
+  | **Operasional / SOP / Audit** | Audit dokumen kasus nyata, daftar temuan kepatuhan, dan rancangan mitigasi risiko konkret |
+- **Tangga *Scaffolded Fade* (Wajib Direncanakan Sejak Phase 1)**:
+  - **Skala S (`micro_know`, 1–2 modul)**: Opsional — cukup aksi mikro praktis.
+  - **Skala M (3–7 modul)**: Wajib minimal **1 Proyek Karya Akhir (`missionLevel: "capstone"`)**.
+  - **Skala L (>= 8 modul / buku penuh)**: Wajib **Mini-Praktek Unit (`missionLevel: "mini_practice"`, 15–45 mnt)** di akhir unit inti (*half-open door* memakai `starterContext`) **+ 1 Proyek Karya Akhir (`missionLevel: "capstone"`, 60–240 mnt)** di akhir workspace (*blank canvas*).
+- **Entri di `curriculum-plan.json`**:
+  ```json
+  {
+    "slug": "capstone-karya-akhir",
+    "title": "Proyek Karya Akhir: ...",
+    "unitCode": "U05",
+    "moduleOrder": 99,
+    "contentType": "project_mission",
+    "knowledgeProfile": "procedural_do",
+    "estimatedMinutes": 90,
+    "needsSlideDeck": false,
+    "sourceSliceIds": [],
+    "prerequisites": [],
+    "state": "pending",
+    "manifestPath": "modules/capstone-karya-akhir.project-mission.json"
+  }
+  ```
 - **Format Manifest (`schemaVersion: "project-mission-v1"`)**:
   ```json
   {
@@ -197,7 +225,20 @@ Segera setelah `plan init`, buat file `./work/nama-kursus/chapter-ledger.json` y
     "relatedConcepts": ["Konsep Bab 1", "Konsep Bab 4"]
   }
   ```
-- **Push CLI**: Jalankan `flashlearn plan push --dir ... --module <slug>` seperti biasa (`project-mission-pusher.ts` otomatis memvalidasi dan mengunggah `contentType: "project_mission"`).
+- **Push CLI (via Plan atau Langsung ke Workspace yang Sudah Ada)**:
+  ```bash
+  # 1. Lewat plan lokal
+  flashlearn plan push --dir "./work/nama-kursus" --module "capstone-karya-akhir"
+
+  # 2. Atau tambahkan langsung ke workspace produksi yang sudah ada (tanpa folder plan)
+  flashlearn content import-project \
+    --workspace-id "<workspace-id-atau-slug>" \
+    --manifest "./modules/capstone-karya-akhir.project-mission.json" \
+    --dry-run
+  flashlearn content import-project \
+    --workspace-id "<workspace-id-atau-slug>" \
+    --manifest "./modules/capstone-karya-akhir.project-mission.json"
+  ```
 
 ---
 
@@ -239,6 +280,17 @@ Jalankan loop ini secara iteratif (**1–2 bab per iterasi/sesi**) agar konteks 
    ```
    - Perbarui `chapter-ledger.json` (`status: "published"`, `keyPointRecall`, `missingPoints: []`) dan tulis ringkasan progres + bab berikutnya di `HANDOFF.md` sebelum lanjut ke bab selanjutnya atau menutup sesi.
    - *(Opsional Slide Deck)*: Jika `needsSlideDeck: true`, buat deck HTML eksternal dengan `guizang-ppt-skill` ke `decks/<slug>.html`, set `<html lang="id" data-ui-lang="id">`, isi `window.__SPEAKER_NOTES__`, dan petakan `slideIndex` / `slideEndIndex`.
+
+### Tahap Penutupan Wajib: Audit Kelengkapan Workspace Deterministik
+Sebelum menyatakan sebuah workspace selesai (atau saat mengaudit workspace yang sudah ada di produksi), **WAJIB** jalankan gerbang deterministik berikut:
+```bash
+# Audit kelengkapan workspace (cek modul interaktif, active recall, project_mission, glosarium, unit)
+flashlearn workspace audit <workspace-id-atau-slug>
+
+# Strict gate (exit non-zero jika status !== COMPLETE)
+flashlearn workspace audit <workspace-id-atau-slug> --strict
+```
+Jika ditemukan celah (`MISSING_CAPSTONE_PROJECT`, `MISSING_SCAFFOLDED_MINI_PRACTICE`, `PASSIVE_ESSAY_DELIVERABLE`, `INVALID_INTERACTIVE_PAYLOAD`, dll.), ikuti `gaps[].suggestedCommand` pada output JSON untuk memperbaikinya menggunakan skill ini hingga status mencapai **`COMPLETE` (100/100)**.
 
 ### Manajemen Remote CRUD Penuh di Produksi (Dari PC Mana Pun)
 ```bash

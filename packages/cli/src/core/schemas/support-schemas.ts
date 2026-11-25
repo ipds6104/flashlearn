@@ -77,8 +77,22 @@ export const SUPPORT_SCHEMAS: Record<string, ResourceSchemaDef> = {
   },
   content: {
     noun: 'content',
-    description: 'Manage educational learning modules (materi, quiz, combined)',
+    description: 'Manage educational learning modules (materi, quiz, combined, interactive_module, project_mission)',
     actions: [
+      {
+        action: 'import-project',
+        description: 'Import or update an independent practice / capstone project mission (project-mission-v1) into any workspace',
+        args: [
+          { name: '--workspace-id', type: 'string', required: true, description: 'Target workspace UUID or slug' },
+          { name: '--manifest', type: 'string', required: true, description: 'Path to project-mission-v1 JSON manifest' },
+          { name: '--title', type: 'string', required: false, description: 'Optional override title' },
+          { name: '--slug', type: 'string', required: false, description: 'Optional override slug' },
+          { name: '--domain-id', type: 'string', required: false, description: 'Optional unit/domain UUID' },
+          { name: '--dry-run', type: 'boolean', required: false, description: 'Validate manifest without persisting' },
+        ],
+        example: 'flashlearn content import-project --workspace-id web-modern --manifest ./modules/capstone.project-mission.json --dry-run',
+        mutating: true,
+      },
       {
         action: 'list',
         description: 'List content modules in workspace',

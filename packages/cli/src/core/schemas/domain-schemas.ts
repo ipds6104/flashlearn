@@ -20,7 +20,17 @@ export const DOMAIN_SCHEMAS: Record<string, ResourceSchemaDef> = {
         args: [
           { name: '<id-or-slug>', type: 'string', required: true, description: 'Workspace UUID or slug' },
         ],
-        example: 'flashlearn workspace get avionics-737',
+        example: 'flashlearn workspace get software-architecture-2ed',
+        mutating: false,
+      },
+      {
+        action: 'audit',
+        description: 'Deterministically audit workspace completeness (learning modules, active recall, independent project missions) with skill-guided remediation',
+        args: [
+          { name: '<id-or-slug>', type: 'string', required: true, description: 'Workspace UUID or slug' },
+          { name: '--strict', type: 'boolean', required: false, description: 'Exit non-zero if workspace is not COMPLETE' },
+        ],
+        example: 'flashlearn workspace audit akselerasi-pemahaman-bridging --strict',
         mutating: false,
       },
       {
@@ -32,7 +42,7 @@ export const DOMAIN_SCHEMAS: Record<string, ResourceSchemaDef> = {
           { name: '--description', type: 'string', required: false, description: 'Purpose description' },
           { name: '--public', type: 'boolean', required: false, description: 'Make publicly accessible' },
         ],
-        example: 'flashlearn workspace create --name "Pemeliharaan Avionik FAA" --slug "faa-145"',
+        example: 'flashlearn workspace create --name "Dasar Pemrograman Web Modern" --slug "web-modern"',
         mutating: true,
       },
       {

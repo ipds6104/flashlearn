@@ -18,11 +18,11 @@ Bun (Runtime & Package Manager), Elysia.js (Backend Framework with OpenAPI 3.1 &
 
 ## Product Purpose
 
-FlashLearn is an active learning platform designed to bridge the gap between static reading and high-retention active recall. It seamlessly transitions the learner from understanding concepts (Materi) to testing comprehension (Quiz), culminating in an instant, tactile 3D Flashcard review of quiz questions to cement memory using spaced repetition principles.
+FlashLearn is an active learning and authentic-practice platform designed to eliminate *Tutorial Hell* and *Imposter Syndrome* by guiding learners through three connected stages: **Deep Comprehension** (Interactive Bridging Modules & structured reading), **Active Recall** (scalable 10–600+ question drills & tactile 3D Flashcards), and **Authentic Practice** (Independent Project Missions — `mini_practice` & `capstone` studios with real-world deliverables and single-point self-audit rubrics).
 
 ## Positioning
 
-Unlike traditional LMSs that bury quizzes behind heavy course structures or flashcard apps (Anki/Quizlet) that lack rich structured reading context, FlashLearn provides a unified triple-mode learning experience (Material, Quiz, Combined) coupled with an automatic post-quiz Flashcard flip generator that transforms quiz mistakes into rapid revision decks with zero friction.
+Unlike traditional LMSs that bury quizzes behind passive lectures or flashcard apps (Anki/Quizlet) that stop at memorization without real-world execution, FlashLearn unifies Guided Interactive Comprehension (`interactive_module`), Scalable Active Recall (`quiz` + 3D Flashcards), and Independent Proof-of-Work Studios (`project_mission`) in a single zero-friction workspace — verified deterministically via CLI (`flashlearn workspace audit`).
 
 ## Operating Context
 

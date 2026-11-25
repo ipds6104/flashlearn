@@ -4,6 +4,7 @@ import type { ApiClient } from '../core/client';
 import { CliError, ExitCode, type NextAction } from '../core/envelope';
 import { validateDomainBlueprint } from '../core/blueprint-validator';
 import { importInteractiveModule } from '../core/interactive-importer';
+import { runWorkspaceAuditCommand } from '../core/workspace-audit-runner';
 
 export async function handleWorkspaceCommand(
   action: string,
@@ -317,10 +318,22 @@ export async function handleWorkspaceCommand(
       };
     }
 
+    case 'audit': {
+      const idOrSlug = args[0] || flags['workspace-id'] || flags.workspace;
+      if (!idOrSlug) {
+        throw new CliError({
+          code: 'MISSING_ARGUMENT',
+          message: 'Workspace ID or slug is required: `flashlearn workspace audit <id-or-slug> [--strict]`',
+          exitCode: ExitCode.VALIDATION_ERROR,
+        });
+      }
+      return await runWorkspaceAuditCommand(client, idOrSlug, Boolean(flags.strict));
+    }
+
     default:
       throw new CliError({
         code: 'UNKNOWN_ACTION',
-        message: `Unknown action '${action}' for noun 'workspace'. Available actions: list, get, create, describe, diagnose, import-blueprint, import-curriculum, delete.`,
+        message: `Unknown action '${action}' for noun 'workspace'. Available actions: list, get, create, update, audit, describe, diagnose, import-blueprint, import-curriculum, delete.`,
         exitCode: ExitCode.USAGE_ERROR,
       });
   }
