@@ -163,6 +163,42 @@ Segera setelah `plan init`, buat file `./work/nama-kursus/chapter-ledger.json` y
 - **Skala & Pedagogi**: Mendukung **10 hingga 600+ soal** per modul tanpa lag (UI otomatis menyediakan sesi mikro `10/20/30/50/Semua`, filter `topic`, *Active Practice* 1-per-layar + *Confidence Calibration*, *Flashcard 3D* dengan *Leitner Re-Queue*, dan *Mode Ujian* terpaginasi). Tidak wajib memaksa ratusan soal — utamakan soal berkualitas yang benar-benar memicu pemahaman & *active recall*.
 - **Push CLI**: Jalankan `flashlearn plan push --dir ... --module <slug>` seperti biasa (`quiz-drill-pusher.ts` otomatis mendeteksi `contentType: "quiz"` / `quiz-drill-v1`).
 
+### F. Misi Praktek Mandiri & Proyek Karya Nyata (`contentType: "project_mission"`, Anti-*Tutorial Hell*)
+- **Tujuan**: Mencegah *imposter syndrome* dan *tutorial hell* dengan memastikan pembelajar tidak berhenti di bacaan/kuis saja, melainkan menghasilkan **Authentic Deliverable** di dunia nyata sesuai bidang workspace (*mis. membangun web app untuk materi pemrograman web, menulis ADR & diagram trade-off untuk arsitektur software, atau menyusun lembar alokasi kas untuk keuangan bisnis*).
+- **Tangga *Scaffolded Fade* (Rekomendasi per Skala Workspace)**:
+  - **Skala S (`micro_know`)**: Opsional — tidak wajib memaksakan proyek besar untuk topik singkat 3–5 menit.
+  - **Skala M & L (Kursus / Buku Teknis / Keterampilan Praktis)**:
+    1. **Mini-Praktek Unit (`missionLevel: "mini_practice"`, 15–45 mnt)**: Sisipkan di akhir unit inti (dengan `starterContext` setengah terbuka agar transisi mulus tanpa *blank-canvas shock*).
+    2. **Proyek Karya Akhir (`missionLevel: "capstone"`, 60–240 mnt)**: 1 studi kasus menyeluruh di akhir workspace tanpa panduan *step-by-step* kode, lengkap dengan *constraints*, *edgeCasesToTest*, dan *Single-Point Self-Audit Rubric*.
+- **Format Manifest (`schemaVersion: "project-mission-v1"`)**:
+  ```json
+  {
+    "schemaVersion": "project-mission-v1",
+    "missionLevel": "capstone",
+    "domainCategory": "Web Development",
+    "estimatedMinutes": 90,
+    "realWorldBrief": "Skenario nyata dari klien/atasan beserta konteks & masalah...",
+    "authenticDeliverable": "Wujud karya konkret (repo GitHub, demo live, dokumen ADR, atau lembar kerja)...",
+    "starterContext": "Opsional: konteks awal/data mentah untuk fase half-open door",
+    "constraints": ["Batasan realistis 1", "Batasan realistis 2"],
+    "edgeCasesToTest": ["Edge case konkret yang wajib diuji sendiri 1", "Edge case 2"],
+    "milestones": [
+      { "id": "m1", "title": "Tonggak progres 1", "hint": "Petunjuk ringan tanpa spoiler" }
+    ],
+    "selfAuditRubric": [
+      {
+        "id": "r1",
+        "criterion": "Kriteria kualitas objektif",
+        "verificationMethod": "Cara konkret peserta menguji sendiri",
+        "redFlag": "Tanda kegagalan umum yang harus dihindari"
+      }
+    ],
+    "stretchGoals": ["Tantangan bonus opsional"],
+    "relatedConcepts": ["Konsep Bab 1", "Konsep Bab 4"]
+  }
+  ```
+- **Push CLI**: Jalankan `flashlearn plan push --dir ... --module <slug>` seperti biasa (`project-mission-pusher.ts` otomatis memvalidasi dan mengunggah `contentType: "project_mission"`).
+
 ---
 
 ## 5. Layer 3 & 4: Phase 2 Incremental Worker Loop (Extract-then-Author + Coverage Ratchet)

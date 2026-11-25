@@ -84,6 +84,7 @@ export const contentController = new Elysia({ prefix: '/api/v1/contents' })
             t.Literal('quiz'),
             t.Literal('combined'),
             t.Literal('interactive_module'),
+            t.Literal('project_mission'),
           ],
           {
             description: 'Type of content',
@@ -93,6 +94,7 @@ export const contentController = new Elysia({ prefix: '/api/v1/contents' })
         readingTimeMinutes: t.Optional(t.Integer()),
         body: t.Optional(t.String({ description: 'Markdown body for materi & combined' })),
         interactivePayload: t.Optional(t.Any()),
+        projectPayload: t.Optional(t.Any()),
         questions: t.Optional(t.Array(quizQuestionSchema)),
         isPublished: t.Optional(t.Boolean({ default: true })),
       }),
@@ -178,6 +180,7 @@ export const contentController = new Elysia({ prefix: '/api/v1/contents' })
             t.Literal('quiz'),
             t.Literal('combined'),
             t.Literal('interactive_module'),
+            t.Literal('project_mission'),
           ])
         ),
         summary: t.Optional(t.String()),
@@ -185,6 +188,7 @@ export const contentController = new Elysia({ prefix: '/api/v1/contents' })
         body: t.Optional(t.String()),
         questions: t.Optional(t.Array(quizQuestionSchema)),
         interactivePayload: t.Optional(t.Any()),
+        projectPayload: t.Optional(t.Any()),
         isPublished: t.Optional(t.Boolean()),
       }),
       detail: {

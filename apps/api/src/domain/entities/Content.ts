@@ -1,4 +1,9 @@
-import type { ContentType, InteractiveModulePayload, QuizQuestion } from '@flashlearn/shared';
+import type {
+  ContentType,
+  InteractiveModulePayload,
+  ProjectMissionPayload,
+  QuizQuestion,
+} from '@flashlearn/shared';
 
 export interface ContentProps {
   id: string;
@@ -13,6 +18,7 @@ export interface ContentProps {
   body: string | null;
   questions: QuizQuestion[] | null;
   interactivePayload?: InteractiveModulePayload | null;
+  projectPayload?: ProjectMissionPayload | null;
   isPublished: boolean;
   deletedAt?: Date | null;
   createdAt: Date;
@@ -62,6 +68,10 @@ export class ContentEntity {
     return this.props.interactivePayload ?? null;
   }
 
+  get projectPayload(): ProjectMissionPayload | null {
+    return this.props.projectPayload ?? null;
+  }
+
   get isPublished(): boolean {
     return this.props.isPublished;
   }
@@ -101,6 +111,7 @@ export class ContentEntity {
       body: this.props.body,
       questions: includeAnswers ? this.props.questions : this.getLearnerQuestions(),
       interactivePayload: this.props.interactivePayload ?? null,
+      projectPayload: this.props.projectPayload ?? null,
       isPublished: this.props.isPublished,
       deletedAt: this.props.deletedAt ? this.props.deletedAt.toISOString() : null,
       createdAt: this.props.createdAt.toISOString(),

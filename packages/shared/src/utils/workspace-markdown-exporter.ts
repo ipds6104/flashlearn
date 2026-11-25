@@ -3,6 +3,7 @@ import {
   formatInteractiveModuleToMarkdown,
   type MarkdownExportOptions,
 } from './interactive-markdown-formatter';
+import { formatProjectMissionToMarkdown } from './project-mission-markdown-formatter';
 
 export interface WorkspaceMarkdownExportInput extends MarkdownExportOptions {
   workspace: Workspace;
@@ -48,6 +49,8 @@ export function exportContentToMarkdown(
 
   if (content.type === 'interactive_module' && content.interactivePayload) {
     sections.push(formatInteractiveModuleToMarkdown(content, content.interactivePayload, options));
+  } else if (content.type === 'project_mission' && content.projectPayload) {
+    sections.push(formatProjectMissionToMarkdown(content, content.projectPayload));
   } else {
     if (content.summary?.trim()) {
       sections.push(`> ${content.summary.trim()}`);
@@ -77,7 +80,7 @@ function groupContentsByUnit(contents: Content[], domains: Domain[]): ExportUnit
 
   for (const c of contents) {
     if (c.deletedAt) continue;
-    const meta = c.interactivePayload?.unitMeta;
+    const meta = c.interactivePayload?.unitMeta || c.projectPayload?.unitMeta;
     const domEntry = c.domainId ? domainMap.get(c.domainId) : undefined;
     const key = meta?.unitCode || domEntry?.domain.code || 'general';
     const title = meta?.unitTitle || domEntry?.domain.name || 'Materi Pembelajaran';
@@ -93,8 +96,8 @@ function groupContentsByUnit(contents: Content[], domains: Domain[]): ExportUnit
   for (const g of sorted) {
     g.items.sort(
       (a, b) =>
-        (a.interactivePayload?.unitMeta?.moduleOrder ?? 999) -
-        (b.interactivePayload?.unitMeta?.moduleOrder ?? 999)
+        (a.interactivePayload?.unitMeta?.moduleOrder ?? a.projectPayload?.unitMeta?.moduleOrder ?? 999) -
+        (b.interactivePayload?.unitMeta?.moduleOrder ?? b.projectPayload?.unitMeta?.moduleOrder ?? 999)
     );
   }
   return sorted;
@@ -154,6 +157,8 @@ export function exportWorkspaceToMarkdown(
           }
         }
         lines.push(formatInteractiveModuleToMarkdown(item, item.interactivePayload, { assetOrigin }), '');
+      } else if (item.type === 'project_mission' && item.projectPayload) {
+        lines.push(formatProjectMissionToMarkdown(item, item.projectPayload), '');
       } else {
         if (item.summary?.trim()) lines.push(`> ${item.summary.trim()}`, '');
         if (item.body?.trim()) lines.push(item.body.trim(), '');

@@ -3,7 +3,7 @@
   import Icon from './Icon.svelte';
 
   interface Props {
-    variant?: 'materi' | 'quiz' | 'combined' | 'neutral' | 'danger' | 'success' | 'warning';
+    variant?: 'materi' | 'quiz' | 'combined' | 'project' | 'neutral' | 'danger' | 'success' | 'warning';
     size?: 'sm' | 'md';
     icon?: any;
     label?: string;
@@ -26,6 +26,7 @@
     materi: 'background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;',
     quiz: 'background: #fefce8; color: #854d0e; border: 1px solid #fef08a;',
     combined: 'background: #f0fdfa; color: #0f766e; border: 1px solid #99f6e4;',
+    project: 'background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;',
     neutral: 'background: #f8fafc; color: #475569; border: 1px solid #e2e8f0;',
     danger: 'background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3;',
     success: 'background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;',

@@ -11,6 +11,10 @@ import type {
   FlashcardItem,
   LearnerContentProgress,
   SaveLearnerProgressRequest,
+  ProjectMissionSubmission,
+  ProjectMissionCritique,
+  SaveProjectSubmissionRequest,
+  RequestProjectCritiqueRequest,
 } from '@flashlearn/shared';
 
 export interface ResumableSessionSummary extends LearnerContentProgress {
@@ -107,4 +111,24 @@ export const contentApi = {
     fetchWithAuth(`/api/v1/contents/workspace/${workspaceId}/progress`),
   listRecentResumable: (limit = 6): Promise<ResumableSessionSummary[]> =>
     fetchWithAuth(`/api/v1/contents/resume/recent?limit=${limit}`),
+  getProjectSubmission: (
+    id: string
+  ): Promise<ProjectMissionSubmission | { contentId: string; notStarted: true }> =>
+    fetchWithAuth(`/api/v1/contents/${id}/project-submission`),
+  saveProjectSubmission: (
+    id: string,
+    payload: SaveProjectSubmissionRequest
+  ): Promise<ProjectMissionSubmission> =>
+    fetchWithAuth(`/api/v1/contents/${id}/project-submission`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+  requestProjectCritique: (
+    id: string,
+    payload: RequestProjectCritiqueRequest
+  ): Promise<ProjectMissionCritique> =>
+    fetchWithAuth(`/api/v1/contents/${id}/project-critique`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 };

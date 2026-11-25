@@ -2,6 +2,7 @@ import type { IContentRepository } from '../../../domain/ports/IContentRepositor
 import type { IWorkspaceRepository } from '../../../domain/ports/IWorkspaceRepository';
 import {
   validateInteractiveModulePayload,
+  validateProjectMissionPayload,
   type Content,
   type CreateContentRequest,
   type UserRole,
@@ -49,6 +50,17 @@ export class CreateContentUseCase {
       }
     }
 
+    if (input.type === 'project_mission') {
+      const report = validateProjectMissionPayload(input.projectPayload);
+      if (!report.valid) {
+        const msg = report.issues
+          .filter((i) => i.severity === 'error')
+          .map((i) => `${i.code}: ${i.message}`)
+          .join('; ');
+        throw new Error(`Invalid project_mission payload: ${msg}`);
+      }
+    }
+
     if (input.slug !== undefined && input.slug !== '') {
       if (!/^[a-z0-9-]+$/.test(input.slug)) {
         throw new Error('Invalid slug: must contain only lowercase alphanumeric characters and hyphens (/^[a-z0-9-]+$/)');
@@ -75,6 +87,7 @@ export class CreateContentUseCase {
       body: input.body,
       questions: input.questions,
       interactivePayload: input.interactivePayload ?? null,
+      projectPayload: input.projectPayload ?? null,
       isPublished: input.isPublished !== undefined ? input.isPublished : true,
     });
 

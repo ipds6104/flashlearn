@@ -2,6 +2,7 @@ import type { IContentRepository } from '../../../domain/ports/IContentRepositor
 import type { IWorkspaceRepository } from '../../../domain/ports/IWorkspaceRepository';
 import {
   validateInteractiveModulePayload,
+  validateProjectMissionPayload,
   type Content,
   type UpdateContentRequest,
   type UserRole,
@@ -44,6 +45,17 @@ export class UpdateContentUseCase {
           .map((i) => `${i.code}: ${i.message}`)
           .join('; ');
         throw new Error(`Invalid interactive_module payload: ${msg}`);
+      }
+    }
+
+    if (effectiveType === 'project_mission' && input.projectPayload !== undefined) {
+      const report = validateProjectMissionPayload(input.projectPayload);
+      if (!report.valid) {
+        const msg = report.issues
+          .filter((i) => i.severity === 'error')
+          .map((i) => `${i.code}: ${i.message}`)
+          .join('; ');
+        throw new Error(`Invalid project_mission payload: ${msg}`);
       }
     }
 

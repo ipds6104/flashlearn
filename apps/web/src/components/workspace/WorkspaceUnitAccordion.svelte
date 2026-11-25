@@ -50,7 +50,7 @@
     const groups = new Map<string, UnitGroup>();
 
     for (const c of contents) {
-      const meta = c.interactivePayload?.unitMeta;
+      const meta = c.interactivePayload?.unitMeta || c.projectPayload?.unitMeta;
       const domEntry = c.domainId ? domainMap.get(c.domainId) : undefined;
       const key = meta?.unitCode || domEntry?.domain.code || 'general';
       const title = meta?.unitTitle || domEntry?.domain.name || 'Sesi Pembelajaran';
@@ -61,7 +61,11 @@
       }
       const g = groups.get(key)!;
       g.items.push(c);
-      g.totalMinutes += c.readingTimeMinutes || c.interactivePayload?.estimatedMinutes || 5;
+      g.totalMinutes +=
+        c.readingTimeMinutes ||
+        c.interactivePayload?.estimatedMinutes ||
+        c.projectPayload?.estimatedMinutes ||
+        5;
       if (progressByContentId[c.id]?.isCompleted) g.completedCount += 1;
     }
 
@@ -69,8 +73,12 @@
     for (const g of sorted) {
       g.items.sort(
         (a, b) =>
-          (a.interactivePayload?.unitMeta?.moduleOrder ?? 999) -
-          (b.interactivePayload?.unitMeta?.moduleOrder ?? 999)
+          (a.interactivePayload?.unitMeta?.moduleOrder ??
+            a.projectPayload?.unitMeta?.moduleOrder ??
+            999) -
+          (b.interactivePayload?.unitMeta?.moduleOrder ??
+            b.projectPayload?.unitMeta?.moduleOrder ??
+            999)
       );
     }
     return sorted;

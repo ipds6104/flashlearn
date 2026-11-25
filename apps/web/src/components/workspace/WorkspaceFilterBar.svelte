@@ -5,6 +5,7 @@
     interactiveCount: number;
     materiCount: number;
     quizCount: number;
+    projectCount?: number;
     deletedCount: number;
     distinctActiveTypeCount: number;
     isOwner: boolean;
@@ -17,6 +18,7 @@
     interactiveCount,
     materiCount,
     quizCount,
+    projectCount = 0,
     deletedCount,
     distinctActiveTypeCount,
     isOwner,
@@ -65,6 +67,16 @@
       style={pillStyle('quiz')}
     >
       <span>Kuis ({quizCount})</span>
+    </button>
+  {/if}
+
+  {#if distinctActiveTypeCount >= 2 && projectCount > 0}
+    <button
+      onclick={() => onSelect('project_mission')}
+      class="fl-btn fl-btn-sm fl-pill-btn"
+      style={pillStyle('project_mission')}
+    >
+      <span>Praktek Mandiri ({projectCount})</span>
     </button>
   {/if}
 

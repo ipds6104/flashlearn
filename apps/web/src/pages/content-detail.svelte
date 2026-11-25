@@ -8,6 +8,7 @@
   import QuizRunner from '../components/QuizRunner.svelte';
   import CombinedModule from '../components/CombinedModule.svelte';
   import InteractiveModuleViewer from '../components/interactive/InteractiveModuleViewer.svelte';
+  import ProjectMissionViewer from '../components/project/ProjectMissionViewer.svelte';
   import ContentEditorModal from '../components/ContentEditorModal.svelte';
   import QuizReviewModal from '../components/QuizReviewModal.svelte';
   import CopyMarkdownButton from '../components/workspace/CopyMarkdownButton.svelte';
@@ -136,8 +137,8 @@
       {#if content}
         <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap;">
           <ChipBadge
-            variant={content.type === 'quiz' ? 'quiz' : content.type === 'materi' ? 'materi' : 'combined'}
-            label={content.type === 'interactive_module' ? 'PANDUAN INTERAKTIF' : content.type.toUpperCase()}
+            variant={content.type === 'quiz' ? 'quiz' : content.type === 'materi' ? 'materi' : content.type === 'project_mission' ? 'project' : 'combined'}
+            label={content.type === 'interactive_module' ? 'PANDUAN INTERAKTIF' : content.type === 'project_mission' ? 'PRAKTEK MANDIRI' : content.type.toUpperCase()}
           />
 
           <SoundToggleButton />
@@ -150,7 +151,7 @@
           />
 
           {#if canEdit}
-            {#if content.type !== 'materi' && content.type !== 'interactive_module'}
+            {#if content.type !== 'materi' && content.type !== 'interactive_module' && content.type !== 'project_mission'}
               <button
                 type="button"
                 class="fl-btn fl-btn-sm fl-pill-btn"
@@ -201,6 +202,10 @@
     {:else if content.type === 'interactive_module'}
       {#key content.id}
         <InteractiveModuleViewer {content} onFinished={goBack} />
+      {/key}
+    {:else if content.type === 'project_mission'}
+      {#key content.id}
+        <ProjectMissionViewer {content} onFinished={goBack} />
       {/key}
     {/if}
   {/if}

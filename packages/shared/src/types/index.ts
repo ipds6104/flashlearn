@@ -15,4 +15,5 @@ export * from './lumis-audit';
 export * from './socratic-chat';
 export * from './elastic-pedagogy';
 export * from './interactive';
+export * from './project-mission';
 export * from './media';

@@ -16,6 +16,7 @@ import { DrizzleCredentialRepository } from '../repositories/DrizzleCredentialRe
 import { DrizzleDomainRepository } from '../repositories/DrizzleDomainRepository';
 import { DrizzleSocraticChatRepository } from '../repositories/DrizzleSocraticChatRepository';
 import { DrizzleInteractiveRepository } from '../repositories/DrizzleInteractiveRepository';
+import { DrizzleProjectSubmissionRepository } from '../repositories/DrizzleProjectSubmissionRepository';
 import { DrizzleMediaAssetRepository } from '../repositories/DrizzleMediaAssetRepository';
 import { PluggableMediaBlobStoreRegistry } from '../storage/MediaBlobStores';
 
@@ -69,6 +70,9 @@ import { GetContentArtifactUseCase } from '../../application/use-cases/interacti
 import { DeleteContentArtifactUseCase } from '../../application/use-cases/interactive/DeleteContentArtifactUseCase';
 import { SaveLearnerProgressUseCase } from '../../application/use-cases/interactive/SaveLearnerProgressUseCase';
 import { GetLearnerProgressUseCase } from '../../application/use-cases/interactive/GetLearnerProgressUseCase';
+import { GetProjectSubmissionUseCase } from '../../application/use-cases/project/GetProjectSubmissionUseCase';
+import { SaveProjectSubmissionUseCase } from '../../application/use-cases/project/SaveProjectSubmissionUseCase';
+import { CritiqueProjectSubmissionUseCase } from '../../application/use-cases/project/CritiqueProjectSubmissionUseCase';
 import {
   DeleteMediaAssetUseCase,
   GetMediaAssetUseCase,
@@ -96,6 +100,7 @@ export class BaseContainer {
   public readonly domainRepository = new DrizzleDomainRepository();
   public readonly socraticChatRepository = new DrizzleSocraticChatRepository();
   public readonly interactiveRepository = new DrizzleInteractiveRepository();
+  public readonly projectSubmissionRepository = new DrizzleProjectSubmissionRepository();
   public readonly mediaAssetRepository = new DrizzleMediaAssetRepository();
   public readonly mediaBlobStoreRegistry = new PluggableMediaBlobStoreRegistry();
 
@@ -249,5 +254,24 @@ export class BaseContainer {
     this.mediaAssetRepository,
     this.workspaceRepository,
     this.mediaBlobStoreRegistry
+  );
+
+  // Phase 25: Independent Practice & Authentic Project Missions
+  public readonly getProjectSubmissionUseCase = new GetProjectSubmissionUseCase(
+    this.contentRepository,
+    this.projectSubmissionRepository,
+    this.workspaceRepository
+  );
+  public readonly saveProjectSubmissionUseCase = new SaveProjectSubmissionUseCase(
+    this.contentRepository,
+    this.projectSubmissionRepository,
+    this.interactiveRepository,
+    this.workspaceRepository
+  );
+  public readonly critiqueProjectSubmissionUseCase = new CritiqueProjectSubmissionUseCase(
+    this.contentRepository,
+    this.projectSubmissionRepository,
+    this.aiGateway,
+    this.workspaceRepository
   );
 }

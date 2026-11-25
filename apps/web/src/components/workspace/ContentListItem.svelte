@@ -81,8 +81,8 @@
       <div style="flex: 1; min-width: 0;">
         <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
           <ChipBadge
-            variant={c.type === 'quiz' ? 'quiz' : c.type === 'materi' ? 'materi' : 'combined'}
-            label={c.type === 'interactive_module' ? 'Panduan Interaktif' : c.type === 'quiz' ? 'Kuis' : c.type === 'materi' ? 'Materi' : 'Materi + Kuis'}
+            variant={c.type === 'quiz' ? 'quiz' : c.type === 'materi' ? 'materi' : c.type === 'project_mission' ? 'project' : 'combined'}
+            label={c.type === 'interactive_module' ? 'Panduan Interaktif' : c.type === 'project_mission' ? (c.projectPayload?.missionLevel === 'capstone' ? 'Proyek Akhir' : 'Praktek Mandiri') : c.type === 'quiz' ? 'Kuis' : c.type === 'materi' ? 'Materi' : 'Materi + Kuis'}
           />
 
           {#if c.hasSlideDeck}
@@ -148,7 +148,7 @@
             <span>{copiedLinkId === c.id ? 'Tersalin' : 'Salin Link'}</span>
           </button>
 
-          {#if c.type !== 'materi' && c.type !== 'interactive_module'}
+          {#if c.type !== 'materi' && c.type !== 'interactive_module' && c.type !== 'project_mission'}
             <button
               type="button"
               class="fl-btn fl-btn-sm fl-pill-btn"

@@ -11,6 +11,7 @@ import {
 } from './plan-builder';
 import { slugifyText } from '../corpus/xml-utils';
 import { isQuizDrillModule, pushQuizDrillModule } from './quiz-drill-pusher';
+import { isProjectMissionModule, pushProjectMissionModule } from './project-mission-pusher';
 
 export { pullRemoteToPlan } from './plan-remote-pull';
 
@@ -250,8 +251,18 @@ export async function pushPlanToRemote(
     const parsedManifest = JSON.parse(readFileSync(manifestAbs, 'utf-8'));
 
     let res: any;
-    if (isQuizDrillModule(mod, parsedManifest)) {
+    const isQuiz = isQuizDrillModule(mod, parsedManifest);
+    const isProject = !isQuiz && isProjectMissionModule(mod, parsedManifest);
+    if (isQuiz) {
       res = await pushQuizDrillModule(client, {
+        workspaceId: wsId,
+        domainId,
+        mod,
+        parsed: parsedManifest,
+        dryRun: Boolean(options.dryRun),
+      });
+    } else if (isProject) {
+      res = await pushProjectMissionModule(client, {
         workspaceId: wsId,
         domainId,
         mod,
@@ -288,7 +299,7 @@ export async function pushPlanToRemote(
       mod.remoteContentId = (res as any).contentId || mod.remoteContentId;
       mod.contentSha256 = computeLocalModuleHash(absDir, mod) || undefined;
       mod.lastUpdatedAt = new Date().toISOString();
-      if (!isQuizDrillModule(mod, parsedManifest)) {
+      if (!isQuiz && !isProject) {
         mergeModuleGlossaryIntoMaster(absDir, mod);
       }
     }

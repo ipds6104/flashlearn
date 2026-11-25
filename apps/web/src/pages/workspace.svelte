@@ -110,8 +110,9 @@
   let interactiveCount = $derived(activeContents.filter((c) => c.type === 'interactive_module').length);
   let materiCount = $derived(activeContents.filter((c) => c.type === 'materi').length);
   let quizCount = $derived(activeContents.filter((c) => c.type === 'quiz').length);
+  let projectCount = $derived(activeContents.filter((c) => c.type === 'project_mission').length);
   let distinctActiveTypeCount = $derived(
-    [interactiveCount, materiCount, quizCount].filter((n) => n > 0).length
+    [interactiveCount, materiCount, quizCount, projectCount].filter((n) => n > 0).length
   );
   let showFilterBar = $derived(
     distinctActiveTypeCount >= 2 || (isOwner && deletedContents.length > 0)
@@ -238,6 +239,7 @@
           {interactiveCount}
           {materiCount}
           {quizCount}
+          {projectCount}
           deletedCount={deletedContents.length}
           {distinctActiveTypeCount}
           {isOwner}

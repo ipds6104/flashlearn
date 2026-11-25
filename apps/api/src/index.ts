@@ -20,6 +20,7 @@ import { credentialController } from './infrastructure/http/controllers/credenti
 import { domainController } from './infrastructure/http/controllers/domain.controller';
 import { socraticChatController } from './infrastructure/http/controllers/socratic-chat.controller';
 import { interactiveController } from './infrastructure/http/controllers/interactive.controller';
+import { projectMissionController } from './infrastructure/http/controllers/project-mission.controller';
 import { mediaController } from './infrastructure/http/controllers/media.controller';
 import { container } from './infrastructure/di/container';
 import { resolveAuth } from './infrastructure/http/middlewares/auth';
@@ -165,6 +166,7 @@ app
   .use(workspaceController)
   .use(contentController)
   .use(interactiveController)
+  .use(projectMissionController)
   .use(mediaController)
   .use(quizController)
   .use(apiKeyController)
