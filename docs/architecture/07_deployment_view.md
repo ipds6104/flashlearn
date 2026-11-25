@@ -1,7 +1,7 @@
 ---
 arc42_section: 7
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 7. Deployment View
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
@@ -98,3 +98,5 @@ graph TD
      3. `exec bun "$API_DIR/src/index.ts"` (starts HTTP server, static SPA hosting, and embedded `BackgroundWorkerDaemon`).
 3. **Environment Secrets Governance**:
    - Runtime secrets (`DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `AI_GATEWAY_URL`, `AI_GATEWAY_KEY`, optional `SEED_MASTER_API_KEY`) are injected via Coolify / Infisical—never committed into source files.
+4. **Portable Local Development Hot-Reload (`compose.dev.yml`)**:
+   - `bun run dev:up` boots an isolated `postgres:16-alpine` container (`127.0.0.1:${POSTGRES_PORT:-5432}:5432`, healthcheck-gated via `--wait`), runs `db:migrate` + `db:seed`, and launches API (`bun --watch`, port `3001`) + Web (`bun --bun vite --host`, port `5173` with `strictPort: false` fallback & same-origin `/api`, `/docs`, `/health` proxy) concurrently via Bun's native workspace `--parallel` runner. Local `.env` overrides remain strictly `.gitignore`d.

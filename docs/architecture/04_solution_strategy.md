@@ -1,7 +1,7 @@
 ---
 arc42_section: 4
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 4. Solution Strategy
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
@@ -118,3 +118,12 @@ To eliminate passive, shallow text modules without overwhelming learners:
 - **One-Instruction-Per-Screen Guided Flow (`buildGuidedLearningSteps` -> `InteractiveModuleViewer.svelte`)**: Learners select a topic and follow one clear action at a time (read -> interact -> answer `<1ms` 5-axis diagnostic probe with 1-hint-at-a-time scaffolding), while secondary glossary and PDF source citations stay quietly collapsed until tapped.
 - **Seamless Auto-Resume (`learner_content_progress` + `x-learner-session`)**: Step position, slide index, anchoring completion, and diagnostic mastery auto-save to both local storage and PostgreSQL for authenticated AND guest learners, surfaced as one-tap "Lanjutkan Belajar" cards (`ResumeLearningStrip.svelte`).
 - **Adaptive Portrait & Landscape HTML Deck Stage (`AdaptiveDeckStage.svelte`)**: Lazy-loaded from `content_artifacts` and rendered strictly inside `<iframe sandbox="allow-scripts">` (without `allow-same-origin`) via FlashLearn's generic MIT `buildSandboxedDeckHtml` bridge (`localStorage` in-memory shim + `postMessage` sync + automatic mobile `low-power` mode). External authoring tools (such as `guizang-ppt-skill` under AGPL-3.0) remain strictly decoupled at CLI authoring time (`flashlearn content import-interactive` / `domain import-curriculum`).
+
+---
+
+### 9. Independent Practice & Authentic Project Missions (`project_mission`, Phase 25)
+To eliminate *Tutorial Hell* and *Imposter Syndrome* across all learning workspaces without imposing bureaucratic licensing gates:
+- **Scaffolded Fade Missions (`ProjectMissionPayload`, `project-mission-v1`)**: Workspaces pair comprehension (`interactive_module`) and recall (`quiz`) with concrete hands-on missions (`mini_practice` per core unit + `capstone` blank-canvas deliverable) specifying `realWorldBrief`, `authenticDeliverable`, `constraints`, `edgeCasesToTest`, `milestones`, and a deterministic `selfAuditRubric`.
+- **Proof-of-Work Persistence (`project_mission_submissions`, migration `0012`)**: Supports both authenticated and guest learners (`x-learner-session`), validates safe `http(s)://` artifact URLs (`validateSafeArtifactUrl`), enforces full rubric + proof-of-work verification before completion, and mirrors completion into `learner_content_progress`.
+- **Optional Fail-Fast AI Mentor Critique**: `POST /api/v1/contents/:id/project-critique` provides non-spoiler strengths, blind spots, and next upgrade steps via `IAiGateway` (returning HTTP `503` if offline; never blocking self-audited completion).
+- **Deterministic Workspace Completeness Gate (`flashlearn workspace audit`)**: `auditWorkspaceCompleteness` verifies every workspace for learning modules, active recall, authentic project missions, anti-essay hygiene, and metadata—directing agents to remediate any gap using `.agents/skills/flashlearn-curriculum-pipeline/SKILL.md`.

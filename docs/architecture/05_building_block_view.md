@@ -1,7 +1,7 @@
 ---
 arc42_section: 5
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 5. Building Block View
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
@@ -55,11 +55,11 @@ graph TD
 
 | Component | Responsibility | Interfaces |
 |---|---|---|
-| FlashLearn Web Client | Reactive SPA built with Svelte 5 Runes and Framework7 v9.1.3 (`apps/web`). Renders simple topic pickers & "Lanjutkan Belajar" resume strip (`ResumeLearningStrip.svelte`), Guided Bridging Interactive Modules (`InteractiveModuleViewer.svelte`, `AdaptiveDeckStage.svelte`, native 2-tier Anchoring Micro-Labs, `<1ms` `DiagnosticStressTestCard.svelte`), Competency DAG (`CompetencyDagView.svelte`), Dual-Loop container (`TaskRunnerModal.svelte`, `LearningSandboxTab.svelte`, `GateExamTab.svelte`), `CausalProbeDeck.svelte`, DB-backed `CorpusReferenceCard.svelte`, XSS-safe `MarkdownRenderer.svelte`, and Socratic AI drawer (`LumisChatAssistant.svelte`). | IF-01 |
-| FlashLearn API Service | Core Hexagonal backend running on Bun 1.4.2 and Elysia.js (`apps/api`). Hosts domain entities, use cases (including `UpsertContentArtifactUseCase`, `GetContentArtifactUseCase`, `SaveLearnerProgressUseCase`, `GetLearnerProgressUseCase`), `BackwardScaffoldingGenerator`, Multi-Tier Oracles, `CompetencyDriftEngine`, `W3cCredentialCryptoEngine`, `AiGatewayService`, SSE streaming endpoints, and static SPA hosting. | IF-01, IF-02, IF-03, IF-04, IF-05, IF-06 |
-| PostgreSQL Database | Relational storage engine managing workspaces, domains, sources, SHA-256 `source_chunks`, contents (including `interactive_payload`), lazy-loaded SHA-256 `content_artifacts`, resumable `learner_content_progress`, competencies, DAG edges, tasks, attempts, mastery records, spaced flashcards, Socratic Merkle sessions, blind reviews, and issued W3C credentials with compound unique constraints. | IF-03 |
+| FlashLearn Web Client | Reactive SPA built with Svelte 5 Runes and Framework7 v9.1.3 (`apps/web`). Renders topic/unit workspaces (`workspace.svelte`, `WorkspaceUnitAccordion.svelte`, `WorkspaceFilterBar.svelte`), "Lanjutkan Belajar" resume strip (`ResumeLearningStrip.svelte`), Guided Bridging Interactive Modules (`InteractiveModuleViewer.svelte`, `AdaptiveDeckStage.svelte`, native 2-tier Anchoring Micro-Labs), Scalable 10–600+ Quiz & 3D Flashcard Drills (`QuizRunner.svelte`, `ActivePracticeRunner.svelte`, `FlashcardDeck.svelte`), Independent Project Mission Studio (`ProjectMissionViewer.svelte`, `ProjectBriefCard.svelte`, `ProjectRubricChecklist.svelte`, `ProjectProofOfWorkCard.svelte`), Tactile Web Audio/Toast feedback (`learningFeedback.svelte.ts`), XSS-safe `MarkdownRenderer.svelte`, and Socratic AI drawer (`LumisChatAssistant.svelte`). Tier-2 Competency DAG / Gate Passport / Reviewer UI tabs were stripped from the primary learner workspace in Phase 25. | IF-01 |
+| FlashLearn API Service | Core Hexagonal backend running on Bun 1.4.2 and Elysia.js (`apps/api`). Hosts domain entities, use cases (including `UpsertContentArtifactUseCase`, `SaveLearnerProgressUseCase`, `GetProjectSubmissionUseCase`, `SaveProjectSubmissionUseCase`, `CritiqueProjectSubmissionUseCase`), Multi-Tier Oracles, `CompetencyDriftEngine`, `W3cCredentialCryptoEngine`, `AiGatewayService`, SSE streaming endpoints, and static SPA hosting. | IF-01, IF-02, IF-03, IF-04, IF-05, IF-06 |
+| PostgreSQL Database | Relational storage engine managing workspaces, domains/units, sources, SHA-256 `source_chunks`, contents (including `interactive_payload` and `project_payload`), `project_mission_submissions`, lazy-loaded SHA-256 `content_artifacts`, persistent `media_assets` / `media_asset_blobs`, resumable `learner_content_progress`, and backend competency/credential tables. | IF-03 |
 | AI Gateway Service | External OpenAI-compatible LLM proxy (9router, Lumis AI Gateway, OpenRouter, or OpenAI) consumed via `AiGatewayService` (`POST /chat/completions` JSON/SSE, `GET /models` health check) with 45s timeout and retry backoff. | IF-04 |
-| FlashLearn Agent CLI | Non-interactive CLI (`flashlearn`, invoked via `bun run cli`) providing JSON envelopes, `--fields`/`--tail`/`--filter` token optimization, `--dry-run`, schema introspection, blueprint validation/import, multi-format lossless corpus extraction (`unpdf` PDF + `fflate` bounded EPUB/PPTX), resumable curriculum sync (`plan init/status/next/mark/push/diff/prune/pull`), and persistent asset uploads (`asset upload`). | IF-02 |
+| FlashLearn Agent CLI | Non-interactive CLI (`flashlearn`, invoked via `bun run cli`) providing JSON envelopes, `--fields`/`--tail`/`--filter` token optimization, `--dry-run`, schema introspection, multi-format lossless corpus extraction (`unpdf` PDF + `fflate` bounded EPUB/PPTX), resumable curriculum sync (`plan init/status/next/mark/push/diff/prune/pull` for `interactive_module`, `quiz`, and `project_mission`), standalone `content import-project`, deterministic `workspace audit --strict`, and persistent asset uploads (`asset upload`). | IF-02 |
 | Public Verification Portal | Public unauthenticated route (`/#/verify/:id`, `apps/web/src/pages/verify-passport.svelte`) paired with `/api/v1/gates/verify/:grantId` and `/api/v1/credentials/verify` for verifying authority passports and Ed25519 W3C VC 2.0 signatures. | IF-05 |
 | Background Worker Daemon | Periodic scheduler (`apps/api/src/worker.ts`) embedded in `index.ts` (or runnable standalone via `bun run worker` / `--once`) executing `ProcessCompetencyDecayBatchUseCase` and workspace source monitoring every 60 seconds. | IF-06 |
 

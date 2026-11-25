@@ -1,7 +1,7 @@
 ---
 arc42_section: 3
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 3. Context and Scope
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
@@ -53,14 +53,14 @@ graph TD
 ## 3.3 Scope Boundaries: In-Scope vs. Out-of-Scope
 
 ### In-Scope
-- Active Recall materials, quizzes, 3D flashcards, and SM-2 spaced repetition (`SpacedRepetitionScheduler`).
-- Topological prerequisite DAG evaluation with cycle detection and Knowledge Space Theory diagnostic placement (`DiagnosticPlacementEngine`).
-- Dual-Loop task execution separating Sandbox practice (with Socratic tutor & unaided checkpoint) from Official Gate Exam (with AI Tutor disabled).
-- Domain-agnostic backward scaffolding derivation (`BackwardScaffoldingGenerator`) and DB-backed *Corpus of Record* display (`CorpusReferenceCard`).
-- Multi-tier oracle evaluation (Class A deterministic, Class B & Adversarial fail-fast AI judge, Class C double-blind multi-rater Gwet's AC1/AC2 consensus).
-- Predictive competency drift modeling (DSR Power Forgetting Curve) and Ed25519-signed W3C Verifiable Credentials 2.0.
+- Guided interactive comprehension modules (`interactive_module`, UILA v2, Clement–Brown Bridging Analogies, sandboxed HTML slide decks & micro-sims) with guest + authenticated auto-resume (`learner_content_progress`).
+- Scalable Active Recall materials, 10–600+ interleaved quizzes (`quiz`, `combined`), 3D tactile flashcards with Leitner Re-Queue, and SM-2 spaced repetition (`SpacedRepetitionScheduler`).
+- Independent Practice & Authentic Project Missions (`project_mission`, `project_mission_submissions`) with Single-Point Self-Audit Rubrics, Proof-of-Work persistence, and optional fail-fast AI Mentor critique (`POST /api/v1/contents/:id/project-critique`).
+- Deterministic CLI curriculum compilation (`flashlearn plan init/push/diff/prune/pull`), standalone project mission import (`flashlearn content import-project`), and workspace completeness auditing (`flashlearn workspace audit --strict`).
+- Backend-only internal competency engine APIs (DAG, multi-tier oracles, W3C VC 2.0) retained for internal document/SOP compliance domains (stripped from primary learner workspace UI in Phase 25 to keep learner UX focused).
 
 ### Out-of-Scope
+- Statutory or physical life-safety licensing & authorization (e.g., clinical surgery, medical practice licenses, aircraft/aviation airworthiness or pilot licensing). Web + LLM evaluation cannot certify physical psychomotor skills or supersede state regulators.
 - Direct hosting or transcoding of large video/audio media streams.
 - Native mobile binary builds (addressed via responsive Framework7 mobile web UI).
 - Proprietary LLM model training or local model weight hosting (FlashLearn connects strictly to external OpenAI-compatible LLM gateways via `IAiGateway`).

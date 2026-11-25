@@ -1,7 +1,7 @@
 ---
 arc42_section: 2
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 2. Architecture Constraints
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 

@@ -1,7 +1,7 @@
 ---
 arc42_section: 11
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 11. Risks and Technical Debt
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
@@ -47,7 +47,8 @@ This section catalogues known architectural risks and active technical debt in F
 | DEBT-05 | Credential Execution Artifact Hash | Column `issued_credentials.execution_artifact_hash` exists in schema (`0009`), but `IssueVerifiableCredentialUseCase` does not yet populate it with the aggregated Merkle hash of verified attempt transcripts. | W3C VCs do not yet embed attempt transcript Merkle digests automatically. | Compute and attach aggregated attempt `conversationHash` / artifact digest in `IssueVerifiableCredentialUseCase`. | v1.1.0 |
 | DEBT-06 | Turnkey Bootstrap Seeds | Five canonical domain seed modules remain under `apps/api/src/infrastructure/database/seeds/` executed by `start.sh` for turnkey onboarding. | Couples starter domain content to backend container startup rather than pure CLI ingestion. | Export the 5 canonical seeds into versioned JSON blueprint files ingested via `flashlearn domain import-blueprint`. | v1.2.0 |
 | DEBT-07 | `packages/cli` Soft-Delete Filtering in `plan diff` | **Resolved (Phase 23)**: `diffPlanWithRemote` now filters out `deleted`/`archived` remote items so pruned legacy modules no longer clutter diff output. | Closed | Completed in `plan-remote-sync.ts`. | v1.1.0 |
-| DEBT-08 | Native CLI Enforcement of `chapter-ledger.json` & Recall Ratchet | The v3 Two-Phase Curriculum Harness (`chapter-ledger.json`, `Key Point Recall >= 85%`) is currently enforced at the agent-skill layer rather than as a deterministic CLI gate. | Relies on authoring agent discipline rather than hard CLI validation during `plan push`. | Add `flashlearn plan audit --min-recall 0.85` and ledger verification into `packages/cli` (Phase 23). | v1.2.0 |
+| DEBT-08 | Native CLI Enforcement of `chapter-ledger.json` & Recall Ratchet | The v3 Two-Phase Curriculum Harness (`chapter-ledger.json`, `Key Point Recall >= 85%`) is currently enforced at the agent-skill layer rather than as a deterministic CLI gate. *(Note: Workspace-level completeness auditing for learning modules, active recall, and `project_mission` deliverables is now enforced deterministically via `flashlearn workspace audit --strict` in Phase 25.)* | Relies on authoring agent discipline for chapter-level recall percentage during `plan push`. | Add `flashlearn plan audit --min-recall 0.85` and ledger verification into `packages/cli` (Phase 26). | v1.2.0 |
+| DEBT-09 | Backfill `project_mission` onto Legacy Book Workspaces | Eight existing production book workspaces created prior to Phase 25 currently flag `MISSING_CAPSTONE_PROJECT` under `flashlearn workspace audit`. | Existing book workspaces lack hands-on capstone deliverables until backfilled. | Author domain-specific `mini_practice`/`capstone` manifests using `flashlearn-curriculum-pipeline` and push via `flashlearn content import-project`. | v1.1.0 |
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 arc42_section: 12
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 12. Glossary
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
@@ -33,6 +33,10 @@ This section defines key pedagogical, domain, architectural, LLM, and security t
 | **Unaided Practice Gate** | Architectural Guardrail | Persisted sandbox milestone (`has_passed_unaided_sandbox`) that unlocks the formal Gate Exam tab (`GateExamTab.svelte`), where the AI Tutor is explicitly disabled (`disableAiTutor={true}`). |
 | **Cognitive Archetypes** | Architecture | FlashLearn's 4 universal task paradigms (`algorithmic_quant`, `artifact_audit`, `ill_structured_case`, `rapid_fluency`) driving domain-agnostic scaffolding. |
 | **Dual-Loop Learning Container** | UI/UX Pattern | Modal pattern (`TaskRunnerModal.svelte`) separating unpenalized learning/practice (`LearningSandboxTab`) from formal evaluation (`GateExamTab`). |
+| **Authentic Deliverable (`project_mission`)** | Transfer & Practice | A tangible, real-world artifact built outside FlashLearn (e.g., working web app, ADR document, cash-flow sheet, analysis notebook) tracked via `project_mission_submissions` to cure *Tutorial Hell* and *Imposter Syndrome*. |
+| **Scaffolded Fade** | Instructional Design | Progressive autonomy moving from guided interactive modules to half-open unit `mini_practice` missions (`starterContext`) and blank-canvas `capstone` projects. |
+| **Single-Point Self-Audit Rubric** | Self-Verification | Objective verification criteria (`criterion`, `verificationMethod`, `redFlag`) allowing learners to rigorously self-audit their independent project before marking completion, independent of AI availability. |
+| **Workspace Completeness Audit** | CLI Governance | Deterministic inspection (`flashlearn workspace audit <id-or-slug> --strict`) verifying comprehension modules, active recall coverage, and authentic `project_mission` deliverables with skill-guided remediation. |
 
 ---
 

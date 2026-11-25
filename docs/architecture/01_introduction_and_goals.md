@@ -1,7 +1,7 @@
 ---
 arc42_section: 1
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,46 +12,45 @@ tracked_paths:
 # 1. Introduction and Goals
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
 The primary goal of FlashLearn is:
-**To produce human resources who are genuinely ready to be entrusted with real-world operational responsibilities, and who can execute those responsibilities properly, accurately, and independently by progressing through systematic learning stages prepared by the system.**
+**To help learners genuinely understand complex concepts, retain them through active recall, and prove mastery by producing authentic real-world work—eliminating *Tutorial Hell* and *Imposter Syndrome*.**
 
-In critical operational domains (such as public procurement, software architecture, engineering, aviation, healthcare, and statistical mapping), traditional corporate training frequently fails because it tests people on theoretical recall without preparing them to execute real tasks. Learners pass exams by memorizing definitions, yet struggle or violate compliance boundaries under real operational pressure.
+Traditional self-study platforms and corporate courses often stop at passive reading or multiple-choice trivia. Learners finish dozens of chapters yet freeze in front of a blank canvas when asked to build software, write an architecture decision record, analyze real financial cash flows, or apply operational SOPs.
 
-FlashLearn eliminates this disconnect through an evidence-based progression that builds procedural mental models, grounds every reference in a verbatim *Corpus of Record*, verifies capability via multi-tier oracles, and issues cryptographically verifiable authority credentials.
+FlashLearn bridges this gap through a unified **3-Stage Learning Loop**:
+1. **Stage 1 — Deep Comprehension (`interactive_module`, `materi`)**: Guided single-focus modules using Clement & Brown Bridging Analogies, interactive micro-labs, dual-coded visual slide decks, and zero-jargon glossaries.
+2. **Stage 2 — Active Recall (`quiz`, `combined`, 3D Flashcards)**: Scalable 10–600+ interleaved practice drills, confidence calibration, and Leitner/SM-2 spaced repetition.
+3. **Stage 3 — Authentic Practice (`project_mission`)**: Scaffolded independent project studios (`mini_practice` per core unit + `capstone` blank-canvas project) with real-world briefs, constraints, edge cases, single-point self-audit rubrics, persistent proof-of-work storage, and optional fail-fast AI mentor critique.
+
+> **Domain Scope Boundary**: FlashLearn supports knowledge-work, software, architecture, finance/business, data analytics, and internal document/SOP readiness. It does **not** issue statutory or physical life-safety practice licenses (such as clinical surgery or aircraft/aviation airworthiness licensing).
 
 ---
 
-## 1.1 The Step-by-Step Learning Progression to Job Readiness
-
-For every competency node in a domain DAG, FlashLearn structures learning into four progressive stages:
+## 1.1 The 3-Stage Learning Progression to Authentic Production
 
 ```mermaid
 flowchart LR
-    S1["Stage 1: Operational Grounding & Job Aids"] --> S2["Stage 2: Causal Priming & Worked Examples"]
-    S2 --> S3["Stage 3: Safe Sandbox & Unaided Practice"]
-    S3 --> S4["Stage 4: Independent Gate Exam & Credentialing"]
+    S1["Stage 1: Deep Comprehension\n(UILA v2 Interactive Modules & Bridging Labs)"] --> S2["Stage 2: Active Recall\n(10-600+ Quiz Drills & 3D Flashcards)"]
+    S2 --> S3["Stage 3: Authentic Practice\n(Mini-Practice & Capstone Project Studio)"]
 
     classDef stage fill:#f8fafc,stroke:#334155,stroke-width:1.5px;
-    class S1,S2,S3,S4 stage;
+    class S1,S2,S3 stage;
 ```
 
-### Stage 1: Operational Grounding & Job Aids
-- Learners review domain-specific *Corpus of Record* excerpts (`source_chunks`), operational checklists, calculation formulas, and statutory citations loaded directly from the database.
+### Stage 1: Deep Comprehension (Guided Single-Focus Modules)
+- Learners explore structured units with one clear action per screen (`InteractiveModuleViewer.svelte`), interactive anchoring labs, explicit analogy breakpoints, inline figures, and auto-resumed progress (`learner_content_progress`).
 
-### Stage 2: Causal Schema Priming & Expert Case Deconstruction
-- Learners interact with causal prediction probes (*What-If* flashcards, analogical comparisons, micro-debugging) and inspect domain-agnostic isomorphic worked examples derived dynamically from task specifications.
+### Stage 2: Active Recall & Spaced Retention
+- Learners drill concepts via micro-sessions (`10/20/30/50`), Active Practice 1-per-screen with Confidence Calibration, and 3D tactile Flashcards with Leitner Re-Queue and SM-2 spaced scheduling.
 
-### Stage 3: Safe Sandbox & Unaided Practice Checkpoint
-- Learners practice inside the penalty-free Sandbox tab (with optional Socratic AI guidance) and complete the mandatory **Unaided Practice Checkpoint** (`POST /api/v1/competencies/:id/unaided-sandbox-pass` or unaided practice attempt) before unlocking formal evaluation.
-
-### Stage 4: Independent Gate Exam & Gate Authorization
-- Inside the formal Gate Exam tab (`GateExamTab.svelte`), the AI Tutor is disabled (`disableAiTutor={true}`). Submissions are evaluated by Multi-Tier Oracles (Class A deterministic, Class B AI judge, Class C human consensus).
-- Passing required competencies and multi-observation variant thresholds unlocks Progressive Authorization Gates and W3C Verifiable Credentials (`DataIntegrityProof` with `eddsa-rdfc-2022`).
+### Stage 3: Independent Project Missions (`project_mission`)
+- Learners escape *Tutorial Hell* by building real-world deliverables (`ProjectMissionViewer.svelte`), verifying their own work against a deterministic Single-Point Self-Audit Rubric, persisting Proof-of-Work (`project_mission_submissions` for both authenticated and guest learners), and optionally requesting non-spoiler AI Mentor critique (`POST /api/v1/contents/:id/project-critique`).
+- Every workspace is deterministically verified via `flashlearn workspace audit <id-or-slug> --strict` to ensure all three stages are present and complete.
 
 ---
 

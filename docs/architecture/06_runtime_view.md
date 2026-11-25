@@ -1,7 +1,7 @@
 ---
 arc42_section: 6
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 6. Runtime View
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
@@ -174,4 +174,42 @@ sequenceDiagram
     API-->>CLI: 200 OK (remoteContentId + contentSha256)
     Author->>CLI: flashlearn plan diff / plan prune --yes (Cross-PC Sync)
     CLI->>API: Compare local plan vs remote workspace & soft-delete removed modules
+```
+
+---
+
+## 6.6 Scenario 6: Independent Project Mission Studio (`project_mission`) & Workspace Completeness Audit
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Learner as Learner (Auth or Guest)
+    participant Web as ProjectMissionViewer.svelte
+    participant API as FlashLearn API Service
+    participant DB as PostgreSQL (project_mission_submissions & learner_content_progress)
+    participant AI as AI Gateway Service (Optional)
+
+    Learner->>Web: Opens project_mission module (Mini-Practice or Capstone)
+    Web->>API: GET /api/v1/contents/:id/project-submission (IF-01, Bearer or x-learner-session)
+    API->>DB: Fetch saved milestones, rubric checks, artifactUrl & notes (IF-03)
+    API-->>Web: 200 OK (submission or notStarted)
+
+    Learner->>Web: Builds real-world deliverable, checks Single-Point Rubric & adds proof-of-work
+    Web->>API: PUT /api/v1/contents/:id/project-submission (status: completed)
+    API->>API: Validate http(s):// artifactUrl + all rubric criteria checked + proof-of-work
+    API->>DB: Upsert project_mission_submissions & mirror isCompleted to learner_content_progress (IF-03)
+    API-->>Web: 200 OK (updates workspace progress bar + tactile milestone celebration)
+
+    opt Optional Non-Spoiler AI Mentor Critique
+        Learner->>Web: Clicks "Minta Kritik Mentor AI"
+        Web->>API: POST /api/v1/contents/:id/project-critique (rate-limited)
+        API->>AI: POST /chat/completions against brief, constraints, edge cases & rubric (IF-04)
+        alt AI Gateway Healthy
+            AI-->>API: Structured strengths, blindSpots & nextUpgradeStep JSON
+            API->>DB: Persist aiCritique on submission (IF-03)
+            API-->>Web: 200 OK (ProjectMissionCritique)
+        else AI Gateway Offline
+            API-->>Web: 503 Service Unavailable (Fail-Fast; self-audit completion unaffected)
+        end
+    end
 ```

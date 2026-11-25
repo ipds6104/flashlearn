@@ -1,7 +1,7 @@
 ---
 arc42_section: 9
-verified_commit: "70f04ca"
-verified_timestamp: "2026-11-24T23:59:45Z"
+verified_commit: "0ae4951"
+verified_timestamp: "2026-11-25T09:23:22Z"
 branch: main
 tracked_paths:
   - apps/
@@ -12,8 +12,8 @@ tracked_paths:
 # 9. Architecture Decisions (ADRs)
 
 > [!INFO] **Architecture Provenance & Freshness**
-> - **Verified Commit**: `fed4511` (branch: `main`)
-> - **Verified Timestamp**: `2026-11-24T23:50:30Z`
+> - **Verified Commit**: `0ae4951` (branch: `main`)
+> - **Verified Timestamp**: `2026-11-25T09:23:22Z`
 > - **Tracked Paths**: `apps/`, `packages/`, `scripts/`
 > - **Drift Status**: `verified`
 
@@ -167,4 +167,16 @@ This section documents architecturally significant decisions (ADRs) governing th
 - **Context**: Extended technical study sessions benefit from immediate multi-sensory momentum cues (progressive pitch escalation, calibrated streak milestones, Leitner redemption) without triggering cognitive overload, auditory fatigue, or the overjustification effect.
 - **Decision**: Synthesize brief (`<320ms`, `<2kHz`) pentatonic/chord earcons procedurally via Web Audio API (`learningFeedback.svelte.ts`, 0 KB external audio assets, muted by default with 1-click persistent `SoundToggleButton`) paired with non-blocking workspace-themed `LearningMilestoneToast` banners (`pointer-events: none`) and GPU-composited `.fl-milestone-pop`/`.fl-streak-pop` transitions respecting `prefers-reduced-motion`.
 - **Consequences**: Engaging, zero-latency mastery reinforcement during Active Practice, 3D Flashcards, and Interactive Module completion with zero reading disruption.
+- **Risks Created**: none
+
+---
+
+## ADR-17: Tier-2 UI Simplification, Authentic Project Missions (`project_mission`) & Deterministic Workspace Auditing (Phase 25)
+- **Status**: Accepted
+- **Context**: Live production inspection showed 8/13 workspaces were book/course curricula where Tier-2 *Peta Kompetensi* and *Paspor Gerbang* UI tabs rendered empty or introduced inappropriate licensing jargon, while statutory/life-safety claims (e.g., clinical surgery, aviation licensing) lie outside the epistemic boundary of web + LLM verification. Simultaneously, learners finishing modules and quizzes without producing tangible real-world artifacts remained vulnerable to *Tutorial Hell* and *Imposter Syndrome*.
+- **Decision**:
+  1. Strip Tier-2 *Peta Kompetensi*, *Paspor Gerbang*, and *Penilai Pakar* tabs/links from primary learner UI (`workspace.svelte`, `app.svelte`) while keeping backend APIs intact and zero-breaking.
+  2. Introduce `ContentType = 'project_mission'` (`project-mission-v1` in `contents.project_payload` + `project_mission_submissions`, migration `0012_project_mission_studio.sql`) with Scaffolded Fade (`mini_practice` & `capstone`), Single-Point Self-Audit Rubrics, strict `http(s)://` artifact URL validation, guest/auth progress sync, optional fail-fast AI mentor critique, and `<200`-line Svelte 5 studio components (`ProjectMissionViewer`, `ProjectBriefCard`, `ProjectRubricChecklist`, `ProjectProofOfWorkCard`).
+  3. Add deterministic CLI completeness auditing (`flashlearn workspace audit <id-or-slug> --strict`) and standalone `flashlearn content import-project`, directing all gap remediation to the unified primary skill `.agents/skills/flashlearn-curriculum-pipeline/SKILL.md` (v3.2) and removing duplicate legacy skill copies.
+- **Consequences**: Clear, focused 3-stage learner loop (*Comprehension → Active Recall → Authentic Practice*), realistic scope boundaries, and machine-enforced workspace completeness across all devices.
 - **Risks Created**: none
