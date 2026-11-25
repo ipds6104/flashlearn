@@ -10,10 +10,6 @@
   import WorkspaceHeader from '../components/workspace/WorkspaceHeader.svelte';
   import WorkspaceFilterBar from '../components/workspace/WorkspaceFilterBar.svelte';
   import WorkspaceUnitAccordion from '../components/workspace/WorkspaceUnitAccordion.svelte';
-  import CompetencyDagView from '../components/competency/CompetencyDagView.svelte';
-  import GatePassportsView from '../components/competency/GatePassportsView.svelte';
-  import DomainTrackSelector from '../components/workspace/DomainTrackSelector.svelte';
-  import CreateDomainModal from '../components/workspace/CreateDomainModal.svelte';
   import Icon from '../components/ui/Icon.svelte';
   import { getWorkspaceTheme } from '../lib/workspaceTheme';
 
@@ -31,15 +27,12 @@
   let contents = $state<Content[]>([]);
   let progressByContentId = $state<Record<string, LearnerContentProgress>>({});
   let domains = $state<Domain[]>([]);
-  let selectedDomainId = $state<string>('');
   let isLoading = $state(true);
   let activeFilter = $state<string>('all');
-  let activeViewTab = $state<'modules' | 'competencies' | 'gates'>('modules');
 
   // Creator Content Editor Modal state (Create & Edit)
   let showEditorModal = $state(false);
   let contentToEdit = $state<Content | null>(null);
-  let showCreateDomainModal = $state(false);
 
   // Soft Delete confirmation modal state
   let showDeleteModal = $state(false);
@@ -99,12 +92,6 @@
         (Array.isArray(progressList) ? progressList : []).map((p) => [p.contentId, p])
       );
       domains = domRes.domains || [];
-      if (domains.length > 0 && (!selectedDomainId || !domains.some(d => d.id === selectedDomainId))) {
-        selectedDomainId = domains[0].id;
-      }
-      if (items.filter((c) => !c.deletedAt).length === 0) {
-        activeViewTab = 'competencies';
-      }
     } catch (err: any) {
       alert(`Gagal memuat workspace: ${err.message}`);
     } finally {
@@ -244,36 +231,8 @@
       onCreateModule={openCreateModal}
     />
 
-    <!-- Workspace Main Views Switcher -->
-    <div class="fl-scroll-row" style="margin-bottom: 20px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 10px;">
-      <button
-        onclick={() => (activeViewTab = 'modules')}
-        class="fl-btn fl-btn-md fl-pill-btn"
-        style="border: none; font-weight: 700; background: {activeViewTab === 'modules' ? 'var(--ws-accent, #0f766e)' : '#f1f5f9'}; color: {activeViewTab === 'modules' ? '#ffffff' : '#475569'};"
-      >
-        <span>Topik Belajar</span>
-      </button>
-
-      <button
-        onclick={() => (activeViewTab = 'competencies')}
-        class="fl-btn fl-btn-md fl-pill-btn"
-        style="border: none; font-weight: 700; background: {activeViewTab === 'competencies' ? 'var(--ws-accent, #0f766e)' : '#f1f5f9'}; color: {activeViewTab === 'competencies' ? '#ffffff' : '#475569'};"
-      >
-        <span>Peta Kompetensi</span>
-      </button>
-
-      <button
-        onclick={() => (activeViewTab = 'gates')}
-        class="fl-btn fl-btn-md fl-pill-btn"
-        style="border: none; font-weight: 700; background: {activeViewTab === 'gates' ? 'var(--ws-accent, #0f766e)' : '#f1f5f9'}; color: {activeViewTab === 'gates' ? '#ffffff' : '#475569'};"
-      >
-        <span>Paspor Gerbang</span>
-      </button>
-    </div>
-
-    {#if activeViewTab === 'modules'}
-      {#if showFilterBar}
-        <WorkspaceFilterBar
+    {#if showFilterBar}
+      <WorkspaceFilterBar
           {activeFilter}
           totalCount={activeContents.length}
           {interactiveCount}
@@ -322,32 +281,10 @@
         onRestore={handleRestoreContent}
       />
     {/if}
-  {:else if activeViewTab === 'competencies'}
-    {#if domains.length > 0}
-      <DomainTrackSelector
-        {domains}
-        {selectedDomainId}
-        onSelectDomain={(dId) => (selectedDomainId = dId)}
-        {isOwner}
-        onOpenCreateDomain={() => (showCreateDomainModal = true)}
-      />
-    {/if}
-    <CompetencyDagView workspaceId={workspace.id} domainId={selectedDomainId} />
-  {:else if activeViewTab === 'gates'}
-    <GatePassportsView workspaceId={workspace.id} />
   {/if}
-{/if}
 </div>
 
 <!-- Modal Components -->
-{#if showCreateDomainModal && workspace}
-  <CreateDomainModal
-    workspaceId={workspace.id}
-    onClose={() => (showCreateDomainModal = false)}
-    onCreated={loadWorkspaceData}
-  />
-{/if}
-
 {#if showEditorModal && workspace}
   <ContentEditorModal
     isOpen={showEditorModal}

@@ -83,16 +83,6 @@
           Latihan SM-2
         </a>
 
-        {#if auth.isCreator || auth.isSuperadmin}
-          <a
-            href="#/reviewer"
-            onclick={(e) => navigateTo('/reviewer', e)}
-            style="color: #7e22ce; text-decoration: none; font-weight: 700; font-size: 0.88rem; white-space: nowrap;"
-          >
-            Penilai Pakar
-          </a>
-        {/if}
-
         {#if auth.isCreator}
           <a
             href="#/creator"
@@ -201,16 +191,6 @@
           >
             Latihan SM-2 Spaced Retrieval
           </a>
-
-          {#if auth.isCreator || auth.isSuperadmin}
-            <a
-              href="#/reviewer"
-              onclick={(e) => navigateTo('/reviewer', e)}
-              style="padding: 12px 14px; border-radius: 10px; text-decoration: none; color: #7e22ce; font-weight: 700; font-size: 0.95rem; background: #faf5ff; border: 1px solid #f3e8ff; min-height: 44px; display: flex; align-items: center;"
-            >
-              Antrean Penilai Pakar (Kelas C)
-            </a>
-          {/if}
 
           {#if auth.isCreator}
             <a
