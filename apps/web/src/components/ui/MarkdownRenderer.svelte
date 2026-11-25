@@ -1,21 +1,15 @@
-<script lang="ts">
+<script module lang="ts">
   import { Marked } from 'marked';
   import { markedAlert } from '../../lib/utils/markedAlert';
   import markedKatex from 'marked-katex-extension';
   import DOMPurify from 'dompurify';
   import hljs from 'highlight.js/lib/common';
 
-  interface Props {
-    content?: string;
-    class?: string;
-  }
-
-  let { content = '', class: customClass = '' }: Props = $props();
-
-  const parser = new Marked();
-  parser.use(markedAlert());
-  parser.use(markedKatex({ throwOnError: false }));
-  parser.use({
+  // Shared singleton parser across all MarkdownRenderer instances (avoids re-creating Marked+KaTeX per quiz option)
+  const sharedParser = new Marked();
+  sharedParser.use(markedAlert());
+  sharedParser.use(markedKatex({ throwOnError: false }));
+  sharedParser.use({
     gfm: true,
     breaks: true,
     renderer: {
@@ -50,11 +44,20 @@
       'points', 'xmlns', 'aria-hidden', 'data-code',
     ],
   };
+</script>
+
+<script lang="ts">
+  interface Props {
+    content?: string;
+    class?: string;
+  }
+
+  let { content = '', class: customClass = '' }: Props = $props();
 
   let html = $derived.by(() => {
     if (!content) return '';
     try {
-      const rawHtml = parser.parse(content) as string;
+      const rawHtml = sharedParser.parse(content) as string;
       return DOMPurify.sanitize(rawHtml, purifyConfig);
     } catch {
       return content

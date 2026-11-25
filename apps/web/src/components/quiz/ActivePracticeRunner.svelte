@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { api } from '../../stores/api';
   import type { CheckQuestionResponse } from '../../stores/api/contents';
   import {
@@ -51,7 +52,8 @@
   }
 
   $effect(() => {
-    resetRunner(questions.slice());
+    const list = questions.slice();
+    untrack(() => resetRunner(list));
   });
 
   let currentQuestion = $derived(activeQuestions[currentIndex]);

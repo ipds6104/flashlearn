@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { Page } from 'framework7-svelte';
   import { api } from '../stores/api';
   import { auth } from '../stores/auth.svelte';
@@ -30,30 +31,35 @@
     loadWorkspaces();
   });
 
+  let lastSyncedVersion = 0;
+
   // Immediately patch & re-sync "Lanjutkan Belajar" whenever any module saves/completes progress
   $effect(() => {
-    const _v = progressSync.version;
-    if (_v === 0) return;
-    const latest = progressSync.latestByContentId;
-    if (recentSessions.length > 0) {
-      recentSessions = recentSessions.map((s) => {
-        const snap = latest[s.contentId];
-        if (!snap) return s;
-        return {
-          ...s,
-          currentStepIndex: snap.currentStepIndex,
-          totalSteps: snap.totalSteps,
-          isCompleted: snap.isCompleted,
-          updatedAt: snap.updatedAt,
-        };
-      });
-    }
-    api.contents
-      .listRecentResumable(4)
-      .then((recent) => {
-        if (Array.isArray(recent)) recentSessions = recent;
-      })
-      .catch(() => {});
+    const v = progressSync.version;
+    if (v === 0 || v === lastSyncedVersion) return;
+    lastSyncedVersion = v;
+    untrack(() => {
+      const latest = progressSync.latestByContentId;
+      if (recentSessions.length > 0) {
+        recentSessions = recentSessions.map((s) => {
+          const snap = latest[s.contentId];
+          if (!snap) return s;
+          return {
+            ...s,
+            currentStepIndex: snap.currentStepIndex,
+            totalSteps: snap.totalSteps,
+            isCompleted: snap.isCompleted,
+            updatedAt: snap.updatedAt,
+          };
+        });
+      }
+      api.contents
+        .listRecentResumable(4)
+        .then((recent) => {
+          if (Array.isArray(recent)) recentSessions = recent;
+        })
+        .catch(() => {});
+    });
   });
 
   function handlePageAfterIn() {

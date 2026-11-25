@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { Page } from 'framework7-svelte';
   import { api } from '../stores/api';
   import { auth } from '../stores/auth.svelte';
@@ -66,11 +67,17 @@
       .catch(() => {});
   }
 
+  let lastSyncedVersion = 0;
+
   $effect(() => {
-    const _v = progressSync.version;
-    if (_v === 0 || !id) return;
-    progressByContentId = { ...progressByContentId, ...progressSync.latestByContentId };
-    refreshWorkspaceProgress();
+    const v = progressSync.version;
+    const wsId = id;
+    if (v === 0 || !wsId || v === lastSyncedVersion) return;
+    lastSyncedVersion = v;
+    untrack(() => {
+      progressByContentId = { ...progressByContentId, ...progressSync.latestByContentId };
+      refreshWorkspaceProgress();
+    });
   });
 
   function handlePageAfterIn() {
