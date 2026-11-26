@@ -22,6 +22,7 @@ import { socraticChatController } from './infrastructure/http/controllers/socrat
 import { interactiveController } from './infrastructure/http/controllers/interactive.controller';
 import { projectMissionController } from './infrastructure/http/controllers/project-mission.controller';
 import { mediaController } from './infrastructure/http/controllers/media.controller';
+import { agentBootstrapController } from './infrastructure/http/controllers/agent-bootstrap.controller';
 import { container } from './infrastructure/di/container';
 import { resolveAuth } from './infrastructure/http/middlewares/auth';
 import { InMemoryTokenBucketLimiter, resolveClientIp } from './infrastructure/http/middlewares/rate-limiter';
@@ -183,11 +184,18 @@ app
   .use(credentialController)
   .use(domainController)
   .use(socraticChatController)
+  .use(agentBootstrapController)
   .get('/c/:id', ({ params, redirect }: any) => redirect(`/#/content/${params.id}`, 302))
   .get('/content/:id', ({ params, redirect }: any) => redirect(`/#/content/${params.id}`, 302))
   .get('/workspace/:id', ({ params, redirect }: any) => redirect(`/#/workspace/${params.id}`, 302))
   .all('*', ({ path, set }: any) => {
-    if (path.startsWith('/api') || path.startsWith('/docs') || path.startsWith('/health')) {
+    if (
+      path.startsWith('/api') ||
+      path.startsWith('/docs') ||
+      path.startsWith('/health') ||
+      path.startsWith('/.well-known') ||
+      path === '/llms.txt'
+    ) {
       return;
     }
     if (existsSync(resolvedPublicDir)) {

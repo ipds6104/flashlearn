@@ -7,18 +7,22 @@ FROM base AS builder
 
 COPY package.json bun.lock ./
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/cli/package.json ./packages/cli/
 COPY apps/api/package.json ./apps/api/
 COPY apps/web/package.json ./apps/web/
 
 RUN bun install --frozen-lockfile
 
+COPY .agents/skills ./.agents/skills
 COPY packages/shared ./packages/shared
+COPY packages/cli ./packages/cli
 COPY apps/web ./apps/web
 COPY apps/api ./apps/api
 COPY start.sh ./start.sh
 
-# Build Svelte 5 + Framework7 production assets
+# Build Svelte 5 + Framework7 production assets and single-file portable FlashLearn CLI bundle
 RUN cd apps/web && bun run build
+RUN bun run --cwd packages/cli build:bundle
 
 # Stage 2: Production Runtime
 FROM oven/bun:1.4-alpine AS runner
@@ -30,7 +34,9 @@ ENV PUBLIC_DIR=/app/apps/web/dist
 
 COPY --chown=bun:bun --from=builder /app/package.json /app/bun.lock /app/start.sh ./
 COPY --chown=bun:bun --from=builder /app/node_modules ./node_modules
-COPY --chown=bun:bun --from=builder /app/packages ./packages
+COPY --chown=bun:bun --from=builder /app/.agents/skills ./.agents/skills
+COPY --chown=bun:bun --from=builder /app/packages/shared ./packages/shared
+COPY --chown=bun:bun --from=builder /app/packages/cli/dist/flashlearn.js ./packages/cli/dist/flashlearn.js
 COPY --chown=bun:bun --from=builder /app/apps/api ./apps/api
 COPY --chown=bun:bun --from=builder /app/apps/web/dist ./apps/web/dist
 

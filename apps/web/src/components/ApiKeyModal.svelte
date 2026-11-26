@@ -1,6 +1,10 @@
 <script lang="ts">
   import { api } from '../stores/api';
   import type { ApiKeyItem } from '@flashlearn/shared';
+  import {
+    buildAgentSkillPrompt,
+    type AgentBootstrapMetadata,
+  } from '../lib/agentSkillPrompt';
   import Icon from './ui/Icon.svelte';
 
   interface Props {
@@ -16,13 +20,28 @@
   let newlyGeneratedKey = $state<string | null>(null);
   let isGenerating = $state(false);
   let copied = $state(false);
-  let aiCopied = $state(false);
+  let skillCopied = $state(false);
+  let genericSkillCopied = $state(false);
+  let bootstrapMeta = $state<AgentBootstrapMetadata | null>(null);
 
   $effect(() => {
     if (isOpen) {
       loadKeys();
+      loadBootstrapMeta();
     }
   });
+
+  async function loadBootstrapMeta() {
+    if (bootstrapMeta) return;
+    try {
+      const res = await fetch('/api/v1/agent/bootstrap');
+      if (res.ok) {
+        bootstrapMeta = await res.json();
+      }
+    } catch {
+      // Fallback to default origin & repo metadata in buildAgentSkillPrompt
+    }
+  }
 
   async function loadKeys() {
     isLoading = true;
@@ -73,67 +92,26 @@
     setTimeout(() => (copied = false), 2000);
   }
 
-  function copyForAi(key: string) {
-    const origin = window.location.origin;
-    const prompt = `# FlashLearn AI Assistant Context
-
-You have programmatic access to the **FlashLearn Education Engine** to create and manage workspaces, modules (materi, quiz, combined), and retrieve analytics.
-
-## Connection Details
-- **Base URL:** ${origin}/api/v1
-- **API Key:** ${key}
-- **OpenAPI Scalar Documentation:** ${origin}/docs
-- **Authentication Header:** \`Authorization: Bearer ${key}\`
-
-## Quick Start Workflows:
-1. **List My Workspaces:**
-   \`GET ${origin}/api/v1/workspaces?scope=mine\`
-
-2. **Create New Content Module (Materi / Quiz / Combined):**
-   \`POST ${origin}/api/v1/contents\`
-   Header: \`Authorization: Bearer ${key}\`, \`Content-Type: application/json\`
-   Body JSON:
-   {
-     "workspaceId": "<workspace-uuid>",
-     "type": "quiz", // or "materi" or "combined"
-     "title": "Judul Materi / Kuis",
-     "summary": "Ringkasan singkat",
-     "body": "# Isi Markdown Materi...",
-     "questions": [
-       {
-         "id": "q1",
-         "question": "Soal kuis?",
-         "options": [
-           { "id": "opt1", "text": "Pilihan A", "isCorrect": true },
-           { "id": "opt2", "text": "Pilihan B", "isCorrect": false }
-         ],
-         "explanation": "Penjelasan detail mengapa opsi A benar.",
-         "difficulty": "medium"
-       }
-     ],
-     "isPublished": true
-   }
-
-3. **Public Shareable Link for Learners:**
-   Once created, return this link to the user to share with students/WhatsApp group:
-   \`${origin}/c/{content-id}\` (or direct: \`${origin}/#/content/{content-id}\`)
-
-4. **Retrieve Quiz Analytics & Export Submissions:**
-   - JSON Submissions: \`GET ${origin}/api/v1/contents/{content-id}/submissions\`
-   - Excel Export (.xlsx): \`GET ${origin}/api/v1/contents/{content-id}/export?format=xlsx\`
-   - CSV Export: \`GET ${origin}/api/v1/contents/{content-id}/export?format=csv\`
-
-5. **Reversible CRUD (Rollback / Undo):**
-   - Rollback to previous version snapshot: \`POST ${origin}/api/v1/contents/{content-id}/rollback\`
-   - Restore soft-deleted content: \`POST ${origin}/api/v1/contents/{content-id}/restore\`
-
-Task:
-Please perform the requested task using the API details above, and return the public shareable link so the creator can preview and share it.`;
-
+  function copyAgentSkill(key?: string | null) {
+    const prompt = buildAgentSkillPrompt({
+      origin: window.location.origin,
+      apiKey: key,
+      metadata: bootstrapMeta,
+    });
     navigator.clipboard.writeText(prompt);
-    aiCopied = true;
-    setTimeout(() => (aiCopied = false), 2500);
+    if (key) {
+      skillCopied = true;
+      setTimeout(() => (skillCopied = false), 2500);
+    } else {
+      genericSkillCopied = true;
+      setTimeout(() => (genericSkillCopied = false), 2500);
+    }
   }
+
+  const skillCount = $derived(bootstrapMeta?.skills?.length || 4);
+  const publicRepoUrl = $derived(
+    bootstrapMeta?.repository?.url || 'https://github.com/ipds6104/flashlearn'
+  );
 </script>
 
 {#if isOpen}
@@ -167,7 +145,7 @@ Please perform the requested task using the API details above, and return the pu
       </div>
 
       <p style="color: #64748b; font-size: 0.9rem; margin-top: 0; margin-bottom: 20px; line-height: 1.5;">
-        Gunakan API Key untuk mengizinkan coding agent (seperti AGY CLI atau Antigravity) membuat kuis, mengedit modul, mengekspor hasil ke Excel, dan melakukan rollback otomatis via REST API.
+        Gunakan API Key bersama tombol <strong>Copy Agent Skill</strong> agar coding agent (Antigravity, Claude Code, Cursor, Codex) dapat mengunduh skill, script, &amp; CLI <code>flashlearn</code> lalu membangun workspace pembelajaran secara mandiri.
       </p>
 
       <!-- Newly Generated Secret Warning -->
@@ -199,18 +177,19 @@ Please perform the requested task using the API details above, and return the pu
             </button>
           </div>
 
-          <!-- Highlight: Copy for AI Agent Button -->
+          <!-- Highlight: Copy Agent Skill Button -->
           <div style="border-top: 1px dashed #86efac; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
             <span style="font-size: 0.8rem; color: #15803d; font-weight: 600;">
-              Ingin langsung serahkan ke coding agent (AGY CLI)?
+              Serahkan ke coding agent agar otomatis memasang skill, script &amp; CLI?
             </span>
             <button
-              onclick={() => copyForAi(newlyGeneratedKey!)}
+              type="button"
+              onclick={() => copyAgentSkill(newlyGeneratedKey!)}
               class="fl-btn fl-btn-sm"
               style="background: linear-gradient(135deg, #4f46e5, #0f766e); color: #ffffff; border: none; font-weight: 800; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);"
             >
               <Icon name="sparkles" size={14} />
-              <span>{aiCopied ? 'Tersalin untuk AI!' : 'Copy for AI Agent'}</span>
+              <span>{skillCopied ? 'Agent Skill Tersalin!' : 'Copy Agent Skill (+ API Key)'}</span>
             </button>
           </div>
         </div>
@@ -280,12 +259,38 @@ Please perform the requested task using the API details above, and return the pu
         </div>
       {/if}
 
-      <!-- Example Usage Tip -->
-      <div style="margin-top: 24px; padding: 14px; background: #f8fafc; border-radius: 10px; font-size: 0.825rem; color: #475569;">
-        <strong>Cara Pakai:</strong> Kirim header HTTP berikut:<br />
-        <code style="display: block; margin-top: 6px; padding: 6px 10px; background: #0f172a; color: #38bdf8; border-radius: 6px;">
-          Authorization: Bearer fl_live_...
-        </code>
+      <!-- Always-available Copy Agent Skill Bootstrap Card -->
+      <div style="margin-top: 22px; padding: 16px; background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 14px; font-size: 0.83rem; color: #134e4a;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;">
+          <div>
+            <div style="font-weight: 800; font-size: 0.92rem; color: #0f766e;">
+              Pasang Agent Skill &amp; CLI ke Coding Agent
+            </div>
+            <div style="font-size: 0.78rem; color: #115e59; margin-top: 2px;">
+              Mencakup {skillCount} Agent Skills, script ekstraksi gambar, CLI <code>flashlearn</code>, &amp; panduan pembuatan workspace.
+            </div>
+          </div>
+          <button
+            type="button"
+            onclick={() => copyAgentSkill(newlyGeneratedKey)}
+            class="fl-btn fl-btn-sm"
+            style="background: #0f766e; color: #ffffff; border: none; font-weight: 700; font-size: 0.82rem; white-space: nowrap;"
+          >
+            <Icon name="sparkles" size={14} />
+            <span>{genericSkillCopied || skillCopied ? 'Agent Skill Tersalin!' : 'Copy Agent Skill'}</span>
+          </button>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.76rem; color: #0f766e; padding-top: 8px; border-top: 1px dashed #99f6e4;">
+          <a href="/.well-known/agent-skills/index.json" target="_blank" rel="noopener noreferrer" style="color: #0f766e; font-weight: 700; text-decoration: underline;">
+            /.well-known/agent-skills/index.json
+          </a>
+          <a href="/llms.txt" target="_blank" rel="noopener noreferrer" style="color: #0f766e; font-weight: 700; text-decoration: underline;">
+            /llms.txt
+          </a>
+          <a href={publicRepoUrl} target="_blank" rel="noopener noreferrer" style="color: #0f766e; font-weight: 700; text-decoration: underline;">
+            GitHub Repo
+          </a>
+        </div>
       </div>
     </div>
   </div>
