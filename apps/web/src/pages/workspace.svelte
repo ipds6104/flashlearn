@@ -9,6 +9,7 @@
   import ConfirmDeleteModal from '../components/ConfirmDeleteModal.svelte';
   import QuizReviewModal from '../components/QuizReviewModal.svelte';
   import WorkspaceHeader from '../components/workspace/WorkspaceHeader.svelte';
+  import WorkspaceOrientationCard from '../components/workspace/WorkspaceOrientationCard.svelte';
   import WorkspaceFilterBar from '../components/workspace/WorkspaceFilterBar.svelte';
   import WorkspaceUnitAccordion from '../components/workspace/WorkspaceUnitAccordion.svelte';
   import Icon from '../components/ui/Icon.svelte';
@@ -238,6 +239,10 @@
       {isOwner}
       onCreateModule={openCreateModal}
     />
+
+    {#if workspace.orientationPayload}
+      <WorkspaceOrientationCard orientation={workspace.orientationPayload} />
+    {/if}
 
     {#if showFilterBar}
       <WorkspaceFilterBar

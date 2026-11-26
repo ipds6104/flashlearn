@@ -18,6 +18,7 @@ export const workspaces = pgTable(
     name: text('name').notNull(),
     slug: text('slug').notNull().unique(),
     description: text('description'),
+    orientationPayload: jsonb('orientation_payload'),
     coverImage: text('cover_image'),
     icon: text('icon'),
     isPublic: boolean('is_public').default(true).notNull(),

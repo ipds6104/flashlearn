@@ -92,6 +92,13 @@
       "when": 1795460000000,
       "tag": "0012_project_mission_studio",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795600000000,
+      "tag": "0013_workspace_mastery_orientation",
+      "breakpoints": true
     }
   ]
 }

@@ -1,8 +1,11 @@
+import type { WorkspaceOrientationPayload } from './workspace-orientation';
+
 export interface Workspace {
   id: string;
   name: string;
   slug: string;
   description: string | null;
+  orientationPayload?: WorkspaceOrientationPayload | null;
   coverImage: string | null;
   icon: string | null;
   isPublic: boolean;
@@ -29,6 +32,7 @@ export interface CreateWorkspaceRequest {
   name: string;
   slug?: string;
   description?: string;
+  orientationPayload?: WorkspaceOrientationPayload | null;
   icon?: string;
   isPublic?: boolean;
 }
@@ -37,6 +41,7 @@ export interface UpdateWorkspaceRequest {
   name?: string;
   slug?: string;
   description?: string;
+  orientationPayload?: WorkspaceOrientationPayload | null;
   icon?: string;
   isPublic?: boolean;
 }

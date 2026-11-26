@@ -281,16 +281,24 @@ Jalankan loop ini secara iteratif (**1–2 bab per iterasi/sesi**) agar konteks 
    - Perbarui `chapter-ledger.json` (`status: "published"`, `keyPointRecall`, `missingPoints: []`) dan tulis ringkasan progres + bab berikutnya di `HANDOFF.md` sebelum lanjut ke bab selanjutnya atau menutup sesi.
    - *(Opsional Slide Deck)*: Jika `needsSlideDeck: true`, buat deck HTML eksternal dengan `guizang-ppt-skill` ke `decks/<slug>.html`, set `<html lang="id" data-ui-lang="id">`, isi `window.__SPEAKER_NOTES__`, dan petakan `slideIndex` / `slideEndIndex`.
 
-### Tahap Penutupan Wajib: Audit Kelengkapan Workspace Deterministik
-Sebelum menyatakan sebuah workspace selesai (atau saat mengaudit workspace yang sudah ada di produksi), **WAJIB** jalankan gerbang deterministik berikut:
+### Tahap Penutupan Wajib: Orientasi Keunggulan & Audit Kelengkapan Workspace Deterministik
+Sebelum menyatakan sebuah workspace selesai (atau saat mengaudit workspace yang sudah ada di produksi), **WAJIB** lengkapi **Orientasi Keunggulan & Peta Realitas (`workspace-orientation-v1`)** yang menjawab 4 pertanyaan inti (*Advance Organizer*, *Expectancy-Value*, *Dreyfus Model*):
+1. `hallmarksOfExcellence[]` ($\ge 3$): ciri mental model & refleks keputusan yang menandai keunggulan di bidang ini.
+2. `magnumOpusExamples[]` ($\ge 2$): karya monumental/magnum opus yang dicapai — **tidak harus figur individu** (`exemplarKind`: `system | organization | team | protocol | practitioner | work`).
+3. `achievableHere[]` ($\ge 2$): aspek keunggulan yang benar-benar bisa dikuasai secara komprehensif di workspace ini.
+4. `honestLimits[]` ($\ge 2$): apa yang **tidak mungkin didapat** hanya dari workspace mandiri (*tacit knowledge*, risiko nyata, dinamika organisasi) beserta rekomendasi konkret di luar workspace.
+
 ```bash
-# Audit kelengkapan workspace (cek modul interaktif, active recall, project_mission, glosarium, unit)
+# Pasang/perbarui Orientasi Keunggulan pada workspace
+flashlearn workspace update <workspace-id-atau-slug> --orientation ./orientation.json
+
+# Audit kelengkapan workspace (cek orientasi keunggulan, modul interaktif, active recall, project_mission, glosarium, unit)
 flashlearn workspace audit <workspace-id-atau-slug>
 
 # Strict gate (exit non-zero jika status !== COMPLETE)
 flashlearn workspace audit <workspace-id-atau-slug> --strict
 ```
-Jika ditemukan celah (`MISSING_CAPSTONE_PROJECT`, `MISSING_SCAFFOLDED_MINI_PRACTICE`, `PASSIVE_ESSAY_DELIVERABLE`, `INVALID_INTERACTIVE_PAYLOAD`, dll.), ikuti `gaps[].suggestedCommand` pada output JSON untuk memperbaikinya menggunakan skill ini hingga status mencapai **`COMPLETE` (100/100)**.
+Jika ditemukan celah (`MISSING_MASTERY_ORIENTATION`, `MISSING_CAPSTONE_PROJECT`, `MISSING_SCAFFOLDED_MINI_PRACTICE`, `PASSIVE_ESSAY_DELIVERABLE`, `INVALID_INTERACTIVE_PAYLOAD`, dll.), ikuti `gaps[].suggestedCommand` pada output JSON untuk memperbaikinya menggunakan skill ini hingga status mencapai **`COMPLETE` (100/100)**.
 
 ### Manajemen Remote CRUD Penuh di Produksi (Dari PC Mana Pun)
 ```bash

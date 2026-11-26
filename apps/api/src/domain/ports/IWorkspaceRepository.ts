@@ -1,9 +1,11 @@
+import type { WorkspaceOrientationPayload } from '@flashlearn/shared';
 import type { WorkspaceEntity } from '../entities/Workspace';
 
 export interface CreateWorkspaceData {
   name: string;
   slug: string;
   description?: string | null;
+  orientationPayload?: WorkspaceOrientationPayload | null;
   coverImage?: string | null;
   icon?: string | null;
   isPublic: boolean;
@@ -14,6 +16,7 @@ export interface UpdateWorkspaceData {
   name?: string;
   slug?: string;
   description?: string | null;
+  orientationPayload?: WorkspaceOrientationPayload | null;
   coverImage?: string | null;
   icon?: string | null;
   isPublic?: boolean;

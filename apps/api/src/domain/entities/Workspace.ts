@@ -1,8 +1,11 @@
+import type { WorkspaceOrientationPayload } from '@flashlearn/shared';
+
 export interface WorkspaceProps {
   id: string;
   name: string;
   slug: string;
   description: string | null;
+  orientationPayload?: WorkspaceOrientationPayload | null;
   coverImage: string | null;
   icon: string | null;
   isPublic: boolean;
@@ -63,6 +66,7 @@ export class WorkspaceEntity {
       name: this.props.name,
       slug: this.props.slug,
       description: this.props.description,
+      orientationPayload: this.props.orientationPayload ?? null,
       coverImage: this.props.coverImage,
       icon: this.props.icon,
       isPublic: this.props.isPublic,

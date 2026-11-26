@@ -1,6 +1,7 @@
 import type { Content, Domain, Workspace } from '../types';
 import { validateInteractiveModulePayload } from './interactive-module-validator';
 import { validateProjectMissionPayload } from './project-mission-validator';
+import { validateWorkspaceOrientationPayload } from './workspace-orientation-validator';
 
 export interface WorkspaceAuditGap {
   severity: 'error' | 'warning';
@@ -23,6 +24,7 @@ export interface WorkspaceAuditSummary {
   unitCount: number;
   modulesWithSummary: number;
   interactiveWithGlossary: number;
+  hasMasteryOrientation: boolean;
 }
 
 export interface WorkspaceCompletenessReport {
@@ -37,7 +39,7 @@ export interface WorkspaceCompletenessReport {
 }
 
 export interface WorkspaceAuditInput {
-  workspace: Pick<Workspace, 'id' | 'slug' | 'name' | 'description'>;
+  workspace: Pick<Workspace, 'id' | 'slug' | 'name' | 'description' | 'orientationPayload'>;
   contents: Content[];
   domains?: Domain[];
 }
@@ -81,7 +83,7 @@ export function auditWorkspaceCompleteness(
   let interactiveWithStressTest = 0;
   let modulesWithSummary = 0;
 
-  // 1. Workspace identity
+  // 1. Workspace identity & Mastery Orientation (Phase 28 Advance Organizer)
   if (!workspace.description || workspace.description.trim().length < 20) {
     gaps.push({
       severity: 'warning',
@@ -91,6 +93,36 @@ export function auditWorkspaceCompleteness(
       recommendedSkill: 'flashlearn-curriculum-pipeline',
       suggestedCommand: `flashlearn workspace update ${workspace.id} --description "<deskripsi tujuan & target karya>"`,
     });
+  }
+
+  let hasMasteryOrientation = false;
+  if (!workspace.orientationPayload) {
+    if (active.length > 0) {
+      gaps.push({
+        severity: active.length >= 3 ? 'error' : 'warning',
+        code: 'MISSING_MASTERY_ORIENTATION',
+        target: wsRef,
+        message:
+          'Workspace belum memiliki Orientasi Keunggulan & Peta Realitas (workspace-orientation-v1: ciri keunggulan, magnum opus, capaian workspace, serta batas jujur & rekomendasi).',
+        recommendedSkill: 'flashlearn-curriculum-pipeline',
+        suggestedCommand: `flashlearn workspace update ${workspace.id} --orientation ./orientation.json`,
+      });
+    }
+  } else {
+    const orientReport = validateWorkspaceOrientationPayload(workspace.orientationPayload);
+    if (!orientReport.valid) {
+      const firstErr = orientReport.issues.find((i) => i.severity === 'error');
+      gaps.push({
+        severity: 'error',
+        code: 'INVALID_MASTERY_ORIENTATION',
+        target: wsRef,
+        message: `orientationPayload gagal validasi workspace-orientation-v1: ${firstErr?.code || 'INVALID'} — ${firstErr?.message || ''}`,
+        recommendedSkill: 'flashlearn-curriculum-pipeline',
+        suggestedCommand: `flashlearn workspace update ${workspace.id} --orientation ./orientation.json`,
+      });
+    } else {
+      hasMasteryOrientation = true;
+    }
   }
 
   // 2. Learning modules existence & structural validity
@@ -294,6 +326,7 @@ export function auditWorkspaceCompleteness(
       unitCount: unitKeys.size,
       modulesWithSummary,
       interactiveWithGlossary,
+      hasMasteryOrientation,
     },
     gaps,
     skillDirective,

@@ -1,5 +1,50 @@
 import { describe, expect, test } from 'bun:test';
-import { auditWorkspaceCompleteness, type Content, type ProjectMissionPayload } from '../src';
+import {
+  auditWorkspaceCompleteness,
+  type Content,
+  type ProjectMissionPayload,
+  type WorkspaceOrientationPayload,
+} from '../src';
+
+const VALID_ORIENTATION: WorkspaceOrientationPayload = {
+  schemaVersion: 'workspace-orientation-v1',
+  headline: 'Membangun aplikasi web responsif yang rapi dan tahan uji.',
+  hallmarksOfExcellence: [
+    { trait: 'Arsitektur Modular', indicator: 'Komponen terisolasi dan mudah diuji secara independen.' },
+    { trait: 'Aksesibilitas', indicator: 'Kontras warna dan navigasi keyboard terverifikasi.' },
+    { trait: 'Performa Render', indicator: 'Animasi hanya memakai transform dan opacity.' },
+  ],
+  magnumOpusExamples: [
+    {
+      exemplarName: 'Web Platform Standards (W3C/MDN)',
+      exemplarKind: 'protocol',
+      achievement: 'Menyatukan interoperabilitas browser lintas perangkat global.',
+      knowledgeApplied: 'HTML semantik, CSS responsif, dan state manajemen bersih.',
+    },
+    {
+      exemplarName: 'Tim Frontend Modern',
+      exemplarKind: 'team',
+      achievement: 'Merilis aplikasi interaktif 120Hz tanpa regresi.',
+      knowledgeApplied: 'Pengujian hermetik, audit performa, dan arsitektur komponen.',
+    },
+  ],
+  achievableHere: [
+    { capability: 'Komponen Web Responsif', evidenceInWorkspace: '5 modul + capstone katalog web.' },
+    { capability: 'State & Persistensi Lokal', evidenceInWorkspace: 'Rubrik audit mandiri capstone.' },
+  ],
+  honestLimits: [
+    {
+      limit: 'Traffic Produksi Skala Jutaan Pengguna',
+      whyBeyondWorkspace: 'Membutuhkan observabilitas dan beban trafik riil di produksi.',
+      recommendation: 'Deploy aplikasi ke cloud nyata dan lakukan load testing.',
+    },
+    {
+      limit: 'Dinamika Code Review Tim Besar',
+      whyBeyondWorkspace: 'Kolaborasi lintas disiplin tidak dapat digantikan sepenuhnya oleh latihan mandiri.',
+      recommendation: 'Kontribusi PR ke proyek open-source atau tim produk nyata.',
+    },
+  ],
+};
 
 const VALID_PROJECT: ProjectMissionPayload = {
   schemaVersion: 'project-mission-v1',
@@ -86,6 +131,7 @@ describe('Deterministic Workspace Completeness Auditor', () => {
         slug: 'web-fundamentals',
         name: 'Web Fundamentals',
         description: 'Belajar membangun aplikasi web modern dari dasar hingga menghasilkan aplikasi nyata.',
+        orientationPayload: VALID_ORIENTATION,
       },
       contents: [...[1, 2, 3, 4, 5].map(makeMateri), projectContent],
     });
@@ -122,6 +168,7 @@ describe('Deterministic Workspace Completeness Auditor', () => {
         slug: 'web-fundamentals',
         name: 'Web Fundamentals',
         description: 'Belajar membangun aplikasi web modern dari dasar hingga siap produksi.',
+        orientationPayload: VALID_ORIENTATION,
       },
       contents: [...[1, 2, 3, 4, 5].map(makeMateri), essayProject],
     });

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { ApiClient } from '../core/client';
 import { CliError, ExitCode, type NextAction } from '../core/envelope';
+import { validateWorkspaceOrientationPayload } from '@flashlearn/shared';
 import { validateDomainBlueprint } from '../core/blueprint-validator';
 import { importInteractiveModule } from '../core/interactive-importer';
 import { runWorkspaceAuditCommand } from '../core/workspace-audit-runner';
@@ -70,13 +71,18 @@ export async function handleWorkspaceCommand(
     }
 
     case 'update': {
-      const id = args[0] || flags['workspace-id'] || flags.workspace;
+      let id = args[0] || flags['workspace-id'] || flags.workspace;
       if (!id) {
         throw new CliError({
           code: 'MISSING_ARGUMENT',
-          message: 'Workspace ID is required: `flashlearn workspace update <id> --name "<name>"`',
+          message: 'Workspace ID or slug is required: `flashlearn workspace update <id-or-slug> [--name ...] [--orientation <file.json>]`',
           exitCode: ExitCode.VALIDATION_ERROR,
         });
+      }
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      if (!isUuid) {
+        const ws = await client.request<any>(`/api/v1/workspaces/${id}`).catch(() => null);
+        if (ws?.id) id = ws.id;
       }
       const body: Record<string, any> = {};
       if (flags.name) body.name = flags.name;
@@ -84,6 +90,29 @@ export async function handleWorkspaceCommand(
       if (flags.description !== undefined) body.description = flags.description;
       if (flags.icon !== undefined) body.icon = flags.icon;
       if (flags.public !== undefined) body.isPublic = flags.public === true || flags.public === 'true';
+
+      const orientationFile = flags.orientation || flags['orientation-file'];
+      if (orientationFile) {
+        const abs = resolve(String(orientationFile));
+        if (!existsSync(abs)) {
+          throw new CliError({
+            code: 'FILE_NOT_FOUND',
+            message: `Orientation file not found: ${abs}`,
+            exitCode: ExitCode.VALIDATION_ERROR,
+          });
+        }
+        const parsed = JSON.parse(readFileSync(abs, 'utf-8'));
+        const report = validateWorkspaceOrientationPayload(parsed);
+        if (!report.valid) {
+          const firstErr = report.issues.find((i) => i.severity === 'error');
+          throw new CliError({
+            code: 'INVALID_ORIENTATION',
+            message: `Invalid workspace-orientation-v1 (${firstErr?.code} at ${firstErr?.path}): ${firstErr?.message}`,
+            exitCode: ExitCode.VALIDATION_ERROR,
+          });
+        }
+        body.orientationPayload = parsed;
+      }
 
       const data = await client.request(`/api/v1/workspaces/${id}`, { method: 'PUT', body });
       return { data };

@@ -1,5 +1,6 @@
 export * from './user';
 export * from './workspace';
+export * from './workspace-orientation';
 export * from './domain';
 export * from './content';
 export * from './source';

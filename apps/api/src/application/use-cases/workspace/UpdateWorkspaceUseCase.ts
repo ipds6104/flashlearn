@@ -1,5 +1,10 @@
 import type { IWorkspaceRepository } from '../../../domain/ports/IWorkspaceRepository';
-import type { Workspace, UpdateWorkspaceRequest, UserRole } from '@flashlearn/shared';
+import {
+  validateWorkspaceOrientationPayload,
+  type Workspace,
+  type UpdateWorkspaceRequest,
+  type UserRole,
+} from '@flashlearn/shared';
 
 export class UpdateWorkspaceUseCase {
   constructor(private readonly workspaceRepository: IWorkspaceRepository) {}
@@ -19,6 +24,16 @@ export class UpdateWorkspaceUseCase {
 
     if (!existing.canBeModifiedBy(currentUserId, isSuperadmin)) {
       throw new Error('Forbidden: You can only edit workspaces you created');
+    }
+
+    if (input.orientationPayload !== undefined && input.orientationPayload !== null) {
+      const report = validateWorkspaceOrientationPayload(input.orientationPayload);
+      if (!report.valid) {
+        const firstErr = report.issues.find((i) => i.severity === 'error');
+        throw new Error(
+          `Invalid orientationPayload (${firstErr?.code || 'INVALID'} at ${firstErr?.path || '$'}): ${firstErr?.message || 'Validation failed'}`
+        );
+      }
     }
 
     const updated = await this.workspaceRepository.update(id, input);
