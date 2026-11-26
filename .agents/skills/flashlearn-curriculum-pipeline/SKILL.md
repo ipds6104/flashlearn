@@ -282,11 +282,19 @@ Jalankan loop ini secara iteratif (**1–2 bab per iterasi/sesi**) agar konteks 
    - *(Opsional Slide Deck)*: Jika `needsSlideDeck: true`, buat deck HTML eksternal dengan `guizang-ppt-skill` ke `decks/<slug>.html`, set `<html lang="id" data-ui-lang="id">`, isi `window.__SPEAKER_NOTES__`, dan petakan `slideIndex` / `slideEndIndex`.
 
 ### Tahap Penutupan Wajib: Orientasi Keunggulan & Audit Kelengkapan Workspace Deterministik
-Sebelum menyatakan sebuah workspace selesai (atau saat mengaudit workspace yang sudah ada di produksi), **WAJIB** lengkapi **Orientasi Keunggulan & Peta Realitas (`workspace-orientation-v1`)** yang menjawab 4 pertanyaan inti (*Advance Organizer*, *Expectancy-Value*, *Dreyfus Model*):
-1. `hallmarksOfExcellence[]` ($\ge 3$): ciri mental model & refleks keputusan yang menandai keunggulan di bidang ini.
-2. `magnumOpusExamples[]` ($\ge 2$): karya monumental/magnum opus yang dicapai — **tidak harus figur individu** (`exemplarKind`: `system | organization | team | protocol | practitioner | work`).
-3. `achievableHere[]` ($\ge 2$): aspek keunggulan yang benar-benar bisa dikuasai secara komprehensif di workspace ini.
-4. `honestLimits[]` ($\ge 2$): apa yang **tidak mungkin didapat** hanya dari workspace mandiri (*tacit knowledge*, risiko nyata, dinamika organisasi) beserta rekomendasi konkret di luar workspace.
+Sebelum menyatakan sebuah workspace selesai (atau saat mengaudit workspace yang sudah ada di produksi), **WAJIB** lengkapi **Orientasi Keunggulan & Peta Realitas (`workspace-orientation-v1`)** sebagai **pintu masuk yang ramah, menyemangati, dan mengatur ekspektasi secara jujur** (*Advance Organizer*, *Expectancy-Value*, *Dreyfus Model*):
+
+> [!IMPORTANT] **Aturan Emas Penulisan Orientasi (Zero-Prerequisite Plain Language)**
+> Pembelajar yang membaca kartu Orientasi **BELUM mempelajari satu pun modul di workspace ini**. Oleh karena itu:
+> 1. **Nol Jargon Teknis yang Belum Diajarkan**: Tulis dalam bahasa sehari-hari yang hangat, mudah dipahami pemula total, dan membangkitkan semangat untuk menamatkan workspace. Jelaskan *perilaku, kebiasaan, dan dampak nyatanya*, BUKAN daftar istilah teknis/rumus yang mengintimidasi.
+> 2. **Nol Jargon Internal Platform**: DILARANG menyebut istilah internal authoring seperti `UILA v2`, `Key Point Recall`, `mini_practice`, `capstone`, `Drill U02`, atau kode modul `m04–m06` pada kartu Orientasi maupun `description` workspace publik.
+> 3. **Fokus pada Harapan & Rasa Mampu (*Expectancy + Value*)**: Tunjukkan bahwa keunggulan di bidang ini bisa dipelajari selangkah demi selangkah, bukan bakat bawaan.
+
+Struktur 4 pilar wajib:
+1. `hallmarksOfExcellence[]` ($\ge 3$): ciri kebiasaan & cara berpikir nyata yang membedakan praktisi/tim unggul dari pemula — ditulis dalam bahasa sehari-hari yang konkret.
+2. `magnumOpusExamples[]` ($\ge 2$): karya nyata luar biasa yang terwujud berkat ilmu ini — **tidak harus figur individu** (`exemplarKind`: `system | organization | team | protocol | practitioner | work`), diceritakan dengan bahasa yang menggugah rasa ingin tahu.
+3. `achievableHere[]` ($\ge 2$): kemampuan nyata yang akan benar-benar dimiliki pembelajar setelah menamatkan workspace ini (diceritakan sebagai hasil yang bisa dirasakan, bukan daftar kode modul).
+4. `honestLimits[]` ($\ge 2$): apa yang **tidak mungkin didapat** hanya dari belajar mandiri di workspace ini (pengalaman di bawah tekanan nyata, dinamika tim/lapangan) beserta langkah kecil yang realistis & menyemangati untuk melanjutkannya nanti.
 
 ```bash
 # Pasang/perbarui Orientasi Keunggulan pada workspace
@@ -298,7 +306,7 @@ flashlearn workspace audit <workspace-id-atau-slug>
 # Strict gate (exit non-zero jika status !== COMPLETE)
 flashlearn workspace audit <workspace-id-atau-slug> --strict
 ```
-Jika ditemukan celah (`MISSING_MASTERY_ORIENTATION`, `MISSING_CAPSTONE_PROJECT`, `MISSING_SCAFFOLDED_MINI_PRACTICE`, `PASSIVE_ESSAY_DELIVERABLE`, `INVALID_INTERACTIVE_PAYLOAD`, dll.), ikuti `gaps[].suggestedCommand` pada output JSON untuk memperbaikinya menggunakan skill ini hingga status mencapai **`COMPLETE` (100/100)**.
+Jika ditemukan celah (`MISSING_MASTERY_ORIENTATION`, `ORIENTATION_INTERNAL_JARGON`, `MISSING_CAPSTONE_PROJECT`, `MISSING_SCAFFOLDED_MINI_PRACTICE`, `PASSIVE_ESSAY_DELIVERABLE`, `INVALID_INTERACTIVE_PAYLOAD`, dll.), ikuti `gaps[].suggestedCommand` pada output JSON untuk memperbaikinya menggunakan skill ini hingga status mencapai **`COMPLETE` (100/100)**.
 
 ### Manajemen Remote CRUD Penuh di Produksi (Dari PC Mana Pun)
 ```bash

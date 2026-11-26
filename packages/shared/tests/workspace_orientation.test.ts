@@ -36,12 +36,12 @@ const validOrientation = {
   ],
   achievableHere: [
     {
-      capability: 'Model Mental DAG & Triage Rilis',
-      evidenceInWorkspace: '12 modul UILA v2 + simulasi triage -rc5.',
+      capability: 'Model Mental Alur Cabang & Triage Rilis',
+      evidenceInWorkspace: '12 modul panduan interaktif + simulasi pemilahan perubahan menjelang rilis.',
     },
     {
-      capability: 'Pemulihan Darurat & Bisect Otomatis',
-      evidenceInWorkspace: 'Lab CLI git bisect run, reflog, revert -m 1, dan capstone.',
+      capability: 'Pemulihan Darurat & Pelacakan Bug Otomatis',
+      evidenceInWorkspace: 'Latihan praktik langsung melacak bug otomatis dan menyelamatkan riwayat kerja.',
     },
   ],
   honestLimits: [

@@ -48,6 +48,8 @@ const PASSIVE_ESSAY_PATTERN =
   /\b(tulis esai|menulis esai|esai definisi|rangkuman teori|meringkas bab|jelaskan pengertian|jawab pertanyaan teori)\b/i;
 const CONCRETE_ARTIFACT_PATTERN =
   /\b(aplikasi|web|repo|github|demo|kode|code|api|adr|diagram|spreadsheet|lembar|template|dokumen|prototipe|prototype|simulasi|script|notebook|dashboard|desain|figma|studi kasus|audit|sop|tabel|analisis)\b/i;
+const INTERNAL_AUTHORING_JARGON_PATTERN =
+  /\b(UILA\s*v\d|Key Point Recall|mini_practice|Mini-Practice\s+U\d|Drill\s+U\d|Modul\s+m\d{2}|lossless\s+v\d)\b/i;
 
 export function auditWorkspaceCompleteness(
   input: WorkspaceAuditInput
@@ -122,6 +124,18 @@ export function auditWorkspaceCompleteness(
       });
     } else {
       hasMasteryOrientation = true;
+      const serialized = JSON.stringify(workspace.orientationPayload);
+      if (INTERNAL_AUTHORING_JARGON_PATTERN.test(serialized)) {
+        gaps.push({
+          severity: 'warning',
+          code: 'ORIENTATION_INTERNAL_JARGON',
+          target: wsRef,
+          message:
+            'Kartu Orientasi masih memuat istilah internal authoring (seperti UILA v2, Drill U02, Modul m04, mini_practice). Tulis ulang dengan bahasa manusia sehari-hari yang hangat dan mudah dipahami pemula.',
+          recommendedSkill: 'flashlearn-curriculum-pipeline',
+          suggestedCommand: `flashlearn workspace update ${workspace.id} --orientation ./orientation.json`,
+        });
+      }
     }
   }
 
